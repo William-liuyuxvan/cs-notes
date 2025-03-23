@@ -8,4 +8,4 @@
 
 init()--在初始化执行  service()--可以进行多次使用  destroy()--结束时执行
 
-![servlet2]([.\img\servlet2.png](https://github.com/William-liuyuxvan/cs-notes/blob/main/img/servlet2.png))
+![imag]([.\img\servlet2.png](https://github.com/William-liuyuxvan/cs-notes/blob/main/img/servlet2.png))
