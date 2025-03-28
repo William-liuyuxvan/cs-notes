@@ -355,15 +355,177 @@ public static Integer valueOf(int i) {
 
 ## String 类
 
+字符串是常量，创建之后不可改变（固定地址的值不能改变，但对象可以改变地址以达到改变值）。
 
+字符串字面值是存储在**字符串池（方法区中）**中，**可以共享**。
 
+~~~java
+String name = "hello"; // "hello"常量存储在字符串池中，栈中 name 直接指向字符串池中的"hello"所在地址
+String name2 = "hello"; // 与上面 name 指向地址相同
+name == name2 // true
 
+String str = new String("java"); // 先在字符串池中创建"java"常量，然后在堆中创建对象，栈中的 str 指向堆中的地址，然后堆中的地址再指向字符串常量中的地址。
+String str2 = new String("java"); // 先在字符串池中查找有无"java"常量，如无就创建该常量。在堆中创建对象，然后指向该常量地址，栈中 str2 再指向堆中地址。
+str == str2 // false
+~~~
 
+一般的字符串比较是否相同用 equals() 方法。
 
+**常用方法**：
 
+- public int length()：返回字符串的长度。
 
+- public char charAt(int index)：根据下标获取字符。
 
+- public boolean contains(String str)：判断当前字符串中是否包含str。
 
+- public char[］toCharArray()：将字符串转换成数组。
+
+- public int indexOf(String str)：查找str首次出现的下标，存在，则返回该下标；不存在，则返回-1。
+
+- public int lastIndexOf(String str)：查找字符串在当前字符串中最后一次出现的下标索引。
+
+- public String trim()：去掉字符串前后的空格。
+
+- public String toUpperCase()：将小写转成大写。
+
+- public boolean endWith(String str)：判断字符串是否以str结尾。
+
+- public String replace(char oldChar, char newChar)：将旧字符串替换成新字符串
+
+- public String[] split(String str)：根据str做拆分。
+
+  ~~~java
+  // 在 public String[] split(String str); 方法中可以使用正则表达式
+  String say = "java is the best    programing language, java xiang";
+  // 利用split方法分为每个单词
+  String[] arr = say.split(" ");
+  System.out.println(Arrays.toString(arr)); // [java, is, the, best, , , , programing, language,, java, xiang]
+  
+  String[] arr2 = say.split("[ ,]"); // [ ,] 表示在" "或","分开
+  System.out.println(Arrays.toString(arr2)); // [java, is, the, best, , , , programing, language, , java, xiang]
+  
+  String[] arr3 = say.split("[ ,]+"); // [ ,]+ 表示在所有" "或","分开
+  System.out.println(Arrays.toString(arr3)); // [java, is, the, best, programing, language, java, xiang]
+  ~~~
+
+**案例练习**：
+
+~~~java
+/*
+已知String str = "this is a text";
+1.将str中的单词单独获取出来
+2.将str中的text替换为practice
+3.在text前面插入一个easy
+4.将每个单词的首字母改为大写
+*/
+String str = "this is a text";
+
+// 1.将str中的单词单独获取出来
+String[] arrString = str.split(" ")
+
+// 2.将str中的text替换为practice
+String str2 = str.replace("text", "practice");
+
+// 3.在text前面插入一个easy
+String str3 = str.replace("text", "easy text");
+
+// 4.将每个单词的首字母改为大写
+String[] arrString = str.split(" ")
+String new = "";
+for (int i = 0; i < arrString; i++) {
+    char first = arrString[i].charAt(0);
+    
+    char upperFirst = Character.toUpperCase(first); 
+    
+    new += upperFirst + arrString[i].substring(1) + " ";
+}
+new = new.substring(0, new.length() - 1);
+
+~~~
+
+---
+
+## 可变字符串
+
+由于String类不可变性，每次更改都会产生新的内存来存储，空间开销大，产生垃圾，效率低，因此提供了可变字符串
+
+- StringBuffer：JDK1.0提供，运行效率慢，线程安全。先开辟一个缓冲区进行操作。
+- StringBuffer：JDK5.0提供，运行效率快，线程不安全。**如果是单线程就用StringBuffer。**
+
+1. StringBuffer
+   - append(String str)  追加字符串str
+   - insert(int index, String str)  在 index 前插入 str
+   - replace(int start, int end, String str)  将 start 到 end - 1 替换为str **（含头不含尾）**
+   - delete(int start, int end)  将 start 到 end - 1 删除 **（含头不含尾）**
+
+2. **StringBuffer  方法与 StringBuffer 一样，但是单线程用 StringBuffer**
+
+-----
+
+## BigDecimal
+
+float 和 double 存储的是近似值，并不是实际值，可能经过运算或者转换之后导致误差，因此用 BigDecimal 来精确计算浮点数。
+
+**运用 BigDecimal 一定要用字符串进行创建。**
+`BigDecimal bd = new BigDecimal("1.0")`
+
+**方法**：
+
+- BigDecimal add(BigDecimal bd)  加
+- BigDecimal subtract(BigDecimal bd)  减
+- BigDecimal multiply(BigDecimal bd)  乘
+- BigDecimal divide(BigDecimal bd)  除
+
+当使用divide方法时，可能报错，**原因是因为除不尽**，那就用参数divide的重载方法来进行解决。
+
+- 除法: divide (BigDecimal bd, int scal, RoundingMode mode)
+- **参数scal**：指定精确到小数点后几位。
+- **参数mode**：
+  - 指定小数部分的取舍模式，通常采用四舍五入的模式
+  - 取值为BigDecimal.ROUND_HALF_UP。
+
+-----
+
+## Date
+
+ **基准时间（纪年）**：1970年1月1日 00:00:00 GMT，Unix操作系统在1969年创建，1970年称为Unix元年。
+
+JDK1.0提供，表示特定的瞬间，精确到毫秒。**Date类（考虑不周全）中的大部分方法都被Calendar类（JDK1.1提供）中的方法取代。**
+
+10^3换算规则：秒 -> 毫秒 -> 微秒 -> 纳秒
+
+**方法**：
+
+- new Date()  设置当前时间
+
+- new Date(long date)
+
+- boolean after(Date when)  是否在指定日期之后
+
+- boolean before(Date when)  是否在指定日期之前
+
+- int compareTo(Date anotherDate)  比较两个日期以进行排序。
+
+- boolean equals(Object obj)  比较两个日期是否相等。
+
+---
+
+ ## Calendar
+
+**构造方法不可使用**，因为 protected Calendar() 修饰符是protected，无法直接创建该对象。
+
+用静态方法 getInstance() 进行创建。
+
+**其他方法**：
+
+- static Calendar getlnstance()  使用默认时区和区域获取日历
+- voidSet(int year,int month,int date,int hourofday,int minute,int second)  设置日历的年、月、日、时、分、秒。
+- int get(int field)  返回给定日历字段的值。字段比如年、月、日等
+- void setTime(Date date)  用给定的Date设置此日历的时间。Date-Calendar
+- Date getTime()  返回一个Date表示此日历的时间。Calendar-Date
+- void add(int field,int amount)  按照日历的规则，给指定字段添加或减少时间量
+- long getTimelnMillies()  毫秒为单位返回该日历的时间值
 
 
 

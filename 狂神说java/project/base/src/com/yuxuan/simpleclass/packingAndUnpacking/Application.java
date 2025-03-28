@@ -23,7 +23,5 @@ public class Application {
         Integer integer3 = testNum;
         // 自动拆箱
         int num2 = integer3;
-
-        Integer
     }
 }
