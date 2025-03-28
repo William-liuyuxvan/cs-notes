@@ -520,12 +520,78 @@ JDK1.0提供，表示特定的瞬间，精确到毫秒。**Date类（考虑不�
 **其他方法**：
 
 - static Calendar getlnstance()  使用默认时区和区域获取日历
-- voidSet(int year,int month,int date,int hourofday,int minute,int second)  设置日历的年、月、日、时、分、秒。
+- void set(int year,int month,int date,int hourofday,int minute,int second)  设置日历的年、月、日、时、分、秒。
+
+~~~java
+// 一般使用set的重载方法
+Calendar calendar = Calendar.getInstance();
+// 设置为本月的第五日
+calendar.set(Calendar.DAY_OF_MONTH, 5);
+~~~
+
 - int get(int field)  返回给定日历字段的值。字段比如年、月、日等
 - void setTime(Date date)  用给定的Date设置此日历的时间。Date-Calendar
 - Date getTime()  返回一个Date表示此日历的时间。Calendar-Date
 - void add(int field,int amount)  按照日历的规则，给指定字段添加或减少时间量
 - long getTimelnMillies()  毫秒为单位返回该日历的时间值
+
+-----
+
+## SimpleDateDormat
+
+一个以与语言环境有关的方式来格式化和解析日期的具体类。
+
+进行格式化（日期 -> 文本）、（文本 -> 日期）。
+
+**常用的时间模式字母**：
+
+| 字母 | 日期或事件          | 示例 |
+| ---- | ------------------- | ---- |
+| y    | 年                  | 2019 |
+| M    | 年中月份            | 08   |
+| d    | 月中天数            | 10   |
+| H    | 1天中小时数（0-23） | 22   |
+| m    | 分钟                | 16   |
+| s    | 秒                  | 59   |
+| S    | 毫秒                | 367  |
+
+**方法 format(Date date) 和 parse(String str)**：
+
+~~~java
+// 1. 创建SimpleDateFormat对象 y 年 M 月
+SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH-mm-ss");
+// 2. 创建Date
+Date date = new Date();
+
+// 格式化date（把日期转成字符串）
+String str = sdf.format(date);
+System.out.println(str);
+
+// 解析（把字符串转成日期）
+// 运用 parse() 方法是要抛出异常 throws Exception
+Date date2 = sdf.parse("1990/05/01 11-25-30"); // 以定义的格式给出
+~~~
+
+------
+
+## System类
+
+System系统类，主要用于获取系统的属性数据和其他操作，构造方法是私有的。
+
+**方法**：
+
+- static void arraycopy(...)  复制数组
+- static long currentTimeMillis();  获取当前系统时间，返回的是毫秒值
+- static void gc();  建议JVM赶快启动垃圾回收器回收垃圾
+- static void exit(int status);  退出JVM，如果参数是0表示正常退出JVM，非0表示异常退出JVM。
+
+
+
+
+
+
+
+
 
 
 
