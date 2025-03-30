@@ -1,4 +1,4 @@
-package com.base.collectionframework.collection;
+package com.base.collectionframework.collectionImp.collection;
 
 /**
  * @ClassName Moves

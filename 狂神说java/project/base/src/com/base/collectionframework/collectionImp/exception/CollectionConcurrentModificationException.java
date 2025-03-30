@@ -1,8 +1,6 @@
-package com.base.collectionframework;
+package com.base.collectionframework.collectionImp.exception;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @ClassName CollectionConcurrentModificationException

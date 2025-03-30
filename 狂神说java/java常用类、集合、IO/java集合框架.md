@@ -363,7 +363,70 @@ list.forEach(name -> {
 });
 ~~~
 
+----
 
+## 可变参数 -> "数据类型...参数名称"
+
+就是一种特殊参数，定义在方法、构造器中的形参中。
+
+**特点**：可以不传数据，可以传一个或多个，可以传数组。
+
+**好处**：常常用来灵活的接收数据。
+
+**注意事项**：
+
+- **可变参数在方法中就是一个数组的形式。**
+- 一个方法中只能存在一个可变参数。
+- 可变参数只能放在形参列表的最后面。
+
+~~~java
+public static void main(String[] args) {
+    test(); // 0 []
+    test(10); // 1 [10]
+    test(10, 20, 30, 40); // 4 [10, 20, 30, 40]
+    test(10, 20, 30, 40); // 4 [10, 20, 30, 40]
+}
+
+public static void test(int... nums) {
+    System.out.println(nums.length);
+    System.out.println(Arrays.toString(nums));
+}
+~~~
+
+-----
+
+## Collections 工具类
+
+一个用来操作集合的工具类
+
+**常用方法**：
+
+~~~java
+List<Integer> list = new ArrayList<>();
+
+// public static <T> boolean addAll(collection<? super T> c, T...elements)：给集合批量添加元素
+Collections.addAll(list, 10, 10, 20, 30, 40);
+System.out.println(list); // [10, 10, 20, 30, 40]
+
+// public static void shuffle(List<?>list)：打乱List集合中的元素顺序
+Collections.shuffle(list);
+System.out.println(list); // [30, 20, 10, 40, 10]
+
+
+// public static<T> void sort(List<T> list)：对List集合中的元素进行升序排序
+Collections.sort(list);
+System.out.println(list); // [10, 10, 20, 30, 40]
+
+// public static<T> void sort(List<T>list,Comparator<? super T> c)：对List集合中元素，按照比较器对象指定的规则进行排序
+// Collections.sort(list, Collections.reverseOrder()); // [40, 30, 20, 10, 10]
+Collections.sort(list, (o1, o2) -> Integer.compare(o2, o1)); // [40, 30, 20, 10, 10]
+
+/*
+对于自定义类 如Student时，1. 需要在Student类中实现Comparable接口中的compareTo方法
+或者 2. 直接在参数Comparator<? super T> c重写方法
+ */
+System.out.println(list);
+~~~
 
 
 

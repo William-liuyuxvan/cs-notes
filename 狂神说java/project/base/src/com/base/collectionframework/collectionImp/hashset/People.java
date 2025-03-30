@@ -1,4 +1,4 @@
-package com.base.collectionframework.hashset;
+package com.base.collectionframework.collectionImp.hashset;
 
 /**
  * @ClassName People

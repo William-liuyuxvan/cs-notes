@@ -1,8 +1,6 @@
-package com.base.collectionframework.collection;
+package com.base.collectionframework.collectionImp.collection;
 
-import javax.sound.midi.Soundbank;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @ClassName Applicatioin
