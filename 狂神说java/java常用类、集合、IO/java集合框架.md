@@ -120,7 +120,7 @@ c.forEach(System.out::println);s
 
 ----
 
-### ArrayList 集合底层原理
+### ArrayList -- 有序、可重复 、有索引
 
 基于**数组**实现的：**查询快、增删慢**（查询时直接利用起始地址加上index，增删时需要移动后面的数据）
 
@@ -140,7 +140,7 @@ c.forEach(System.out::println);s
 
 ---
 
-### LinkedList集合底层原理
+### LinkedList -- 有序、可重复 、无索引
 
 基于**双链表**实现：**查询慢、增删快（相对于数组）**
 
@@ -174,7 +174,7 @@ c.forEach(System.out::println);s
 
 ------
 
-### HashSet 集合的底层原理
+### HashSet -- 无序、不重复 、无索引
 
 基于**哈希表**实现。
 
@@ -228,7 +228,7 @@ public int hashCode() {
 
 -----
 
-### LinkedHashSet 集合
+### LinkedHashSet -- 有序、不重复 、无索引
 
 基于哈希表**（数组、链表、红黑树）**实现，但是**每个元素都额外多了一个双链表的机制记录它前后元素的位置**。
 
@@ -238,7 +238,7 @@ public int hashCode() {
 
 -----
 
-### TreeSet 集合
+### TreeSet -- 可排序、不重复 、无索引
 
 **可排序（默认升序 ---> 基于红黑树）、不重复、无索引**
 
@@ -428,7 +428,232 @@ Collections.sort(list, (o1, o2) -> Integer.compare(o2, o1)); // [40, 30, 20, 10,
 System.out.println(list);
 ~~~
 
+-----
 
+## Map
+
+双列集合，一次需要存一对数据
+
+key=value  一个键值对/键值对对象/一个Entry对象 ----- Map集合也叫“键值对集合”
+
+**键可以重复，值不能重复。**
+
+**特点**：Map集合的特点是由键决定的，值只是一个附属品，值是不做要求的。
+
+- HashMap：无序、不重复、无索引；**（用的最多）**
+- LinkedHashMap：**有序**、不重复、无索引。
+
+**常用方法**：
+
+- public V put(K key,V value)：添加元素
+- public int size()：获取集合的大小
+- public void clear()：清空集合
+- public boolean isEmpty()：判断集合是否为空，为空返回true，反之
+- public V get(object key)：根据键获取对应值
+- public V remove(object key)：根据键删除整个元素
+- public boolean containsKey(object key)：判断是否包含某个键
+- public boolean containsValue(object value)：判断是否包含某个值
+- public Set\<K> keySet()：获取全部键的集合
+- public Collection\<V> values()：获取Map集合的全部值
+
+**遍历方法**：
+
+1. 键找值：先 keySet() 后 get(object key)。
+2. 键值对：先 Set<Map.Entry<K, V>> endtries = map.entrySet(); 获取所有“键值对”的集合。
+3. Lambda（JDK 1.8开始）：map.forEach(BiConsumer<? super K, ? super V> action); 重写accept()方法。
+
+-------
+
+## HashMap -- 无序、不重复 、无索引
+
+HashMap跟HashSet的底层原理是一摸一样的，都是基于**哈希表**实现的。
+
+**注意：Set系列集合的底层是基于Map实现的，只是Set只需要键数据，不要值数据。**
+
+**HashMap的唯一性是由equals()和hashCode()来确定的。**
+
+----
+
+## LinkedHashMap -- 有序、无重复、无索引
+
+哈希表+双链表
+
+LinkedHashSet 是基于 LinkedHashMap 实现的 
+
+----
+
+## TreeMap -- 可排序、无重复、无索引
+
+只对键排序
+
+TreeSet 是基于 TreeMap 实现的 
+
+----
+
+## 集合的嵌套
+
+**案例**：
+需求：
+要求在程序中记住如下省份和其对应的城市信息，记录成功后，要求可以查询出湖北省的城市信息。
+
+- 江苏省=南京市，扬州市，苏州市，无锡市，常州市
+- 湖北省=武汉市，孝感市，十堰市，宜昌市，鄂州市
+- 河北省=石家庄市，唐山市，邢台市，保定市，张家口市
+
+分析：
+1. 定义一个Map集合，键用表示省份名称，值表示城市名称，注意：城市会有多个。
+2. 根据“湖北省”这个键获取对应的值展示即可。
+
+~~~java
+// 1. 定义一个集合嵌套的map
+Map<String, List<String>> cityMap = new HashMap<>();
+
+// 2. 添加每个省份的城市
+List<String> citis1 = new ArrayList<>();
+Collections.addAll(citis1, "南京市","扬州市","苏州市","无锡市","常州市");
+cityMap.put("江苏省", citis1);
+
+List<String> citis2 = new ArrayList<>();
+Collections.addAll(citis2, "武汉市","孝感市","十堰市","宜昌市","鄂州市");
+cityMap.put("湖北省", citis2);
+
+List<String> citis3 = new ArrayList<>();
+Collections.addAll(citis3, "石家庄市","唐山市","邢台市","保定市","张家口市");
+cityMap.put("河北省", citis3);
+
+// 3. 输出查看
+System.out.println(cityMap);
+cityMap.forEach((p, c) -> System.out.println(p + "-->" + c));
+~~~
+
+-----
+
+## Stream  --  JDK8新特性
+
+Stream流，是JDK8的一套新增API（java.util.stream.*），**可以用来操作集合或者数组的数据**。
+
+**优势**：**Stream流中大量的结合了lambda语法风格**，提供一个更强大、更简单的方法操作集合或者数组中的数据，**代码更简洁，可读性更好**。
+
+**使用步骤**：
+
+1. 获取Stream流 ---> .stream()
+
+2. 处理Stream流 ---> 调用流水线的各种方法对数据进行处理、计算。**支持链式编程**。
+
+3. 获得处理的结果 ---> 将处理后的结果收集到一个新集合中返回。.collect()
+
+~~~java
+list.stream().filter(操作).filter(操作).collect(获取形式);
+~~~
+
+------
+
+## 获取Stream流
+
+- 获取**集合**的Stream流 --- 对于Map无效
+
+  Collection提供方法：
+
+  default Stream\<E> stream()：获取当前集合对象的stream流
+
+- 获取**数组**的Stream流
+
+  1. Arrays类提供方法：
+
+     public static \<T> Stream\<T> stream(T[] array)：获取当前数组的stream流
+
+  2. Stream类提供的如下方法：
+
+     public static \<T> Stream\<T> of(T...values)：获取当前接收数据的stream流
+
+~~~java
+//1、如何获取List集合的Stream流？
+System.out.println("1、如何获取List集合的Stream流？");
+List<String> names = new ArrayList<>();
+Collections.addAll(names,"张三丰", "张无忌", "周芷若", "赵敏", "张强");
+names.stream().filter(name -> name.contains("张")).forEach(System.out::println);
+
+//2、如何获取Set集合的Stream流？
+System.out.println("2、如何获取Set集合的Stream流？");
+Set<String> set=new HashSet<>();
+Collections.addAll(set,"刘德华", "张曼玉", "蜘蛛精", "马德", "德玛西亚");
+set.stream().filter(s -> s.contains("德")).forEach(System.out::println);
+
+//3、如何获取Map集合的Stream流？
+System.out.println("3、如何获取Map集合的Stream流？");
+Map<String,Double>map=new HashMap<>();
+map.put("古力娜扎", 172.3);
+map.put("迪丽热巴", 168.3);
+map.put("马尔扎哈", 166.3);
+map.put("卡尔扎巴", 168.3);
+
+map.entrySet().stream().filter(entry -> entry.getKey().contains("扎")).forEach(entry -> System.out.println(entry.getKey() + "--->"+ entry.getValue()));
+
+//4、如何获取数组的Stream流？
+System.out.println("4、如何获取数组的Stream流？");
+String[] names2={"张翠山", "东方不败", "唐大山", "独孤求败"};
+
+// 方法1：使用Arrays中的stream()方法
+System.out.println("方法1：使用Arrays中的stream()方法");
+Arrays.stream(names2).filter(str -> str.contains("山")).forEach(System.out::println);
+
+// 方法2：使用Stream中静态方法of()
+System.out.println("方法2：使用Stream中静态方法of()");
+Stream.of(names2).filter(str -> str.contains("山")).forEach(System.out::println);
+~~~
+
+-----
+
+## Stream流的常见方法
+
+- Stream\<T> filter(Predicate<? super T> predicate)：用于对流中的数据进行过滤。
+- Stream\<I> sorted()：对元素进行升序排序。
+- Stream\<I> sorted(Comparator<? super I> comparator)：按照指定规则排序。
+- Stream\<T> limit(long maxSize)：获取前几个元素。
+- Stream\<T> skip(long n)：跳过前几个元素。
+- Stream\<T> distinct()：去除流中重复的元素。
+- \<R> Stream\<R> map(Eunction<? super L,? extends R> mapper)：对元素进行加工，并返回对应的新流。
+- static \<T> Stream\<T> concat(Stream a，Stream b)：合并a和b两个流为一个流。
+
+~~~java
+List<Double> scores = new ArrayList<>();
+Collections.addAll(scores, 88.5, 100.0, 60.0, 99.0, 9.5, 99.6, 25.0);
+//需求1：找出成绩大于等于60分的数据，并升序后，再输出。
+System.out.println("需求1：找出成绩大于等于60分的数据，并升序后，再输出。");
+scores.stream().filter(s -> s >= 60).sorted().forEach(System.out::println);
+
+List<Student> students=new ArrayList<>();
+Student s1 = new Student("蜘蛛精", 26, 172.5) ;
+Student s2 = new Student("蜘蛛精", 26, 172.5);
+Student s3 = new Student("紫霞", 23, 167.6);
+Student s4 = new Student("白晶晶", 25, 169.0);
+Student s5 = new Student("牛魔王", 35, 183.3);
+Student s6 = new Student("牛夫人", 34, 168.5);
+Collections.addAll(students, s1, s2, s3, s4, s5, s6);
+//需求2：找出年龄大于等于23，且年龄小于等于30岁的学生，并按照年龄降序输出
+System.out.println("需求2：找出年龄大于等于23，且年龄小于等于30岁的学生，并按照年龄降序输出");
+students.stream().filter(student -> student.getAge() >= 23 && student.getAge() <= 30).sorted((o1, o2) -> Double.compare(o2.getAge(), o1.getAge())).forEach(System.out::println);
+
+//需求3：取出身高最高的前3名学生，并输出。
+System.out.println("需求3：取出身高最高的前3名学生，并输出。");
+students.stream().sorted((o1, o2) -> Double.compare(o2.getHeight(), o1.getHeight())).limit(3).forEach(System.out::println);
+
+//需求4：取出身高倒数的2名学生，并输出。
+System.out.println("需求4：取出身高倒数的2名学生，并输出。");
+students.stream().sorted((o1, o2) -> Double.compare(o2.getHeight(), o1.getHeight())).skip(students.size() - 2).forEach(System.out::println);
+
+//需求5：找出身高超过168的学生叫什么名字，要求去除重复的名字，再输出。
+System.out.println("需求5：找出身高超过168的学生叫什么名字，要求去除重复的名字，再输出。");
+students.stream().filter(s -> s.getHeight() > 168).map(Student::getName).distinct().forEach(System.out::println);
+
+//distinct去重复，自定义类型的对象（希望内容一样就认为重复，重写hashCode，equals）
+students.stream().filter(s ->s.getHeight()>168).distinct().forEach(System.out::println);
+
+Stream<String> st1 = Stream.of("张三", "李四");
+Stream<String> st2 = Stream.of("张三2", "李四2", "王五");
+Stream<String> allst = Stream.concat(st1,st2);
+allst.forEach(System.out::println);
+~~~
 
 
 
