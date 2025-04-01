@@ -655,13 +655,74 @@ Stream<String> allst = Stream.concat(st1,st2);
 allst.forEach(System.out::println);
 ~~~
 
+------
 
+## Stream流的终结方法
 
+终结方法调用后，不会返回新的Stream，不能继续使用流。
 
+- void forEach(Consumer action)：对此流运算后的元素执行遍历
+- long count()：统计此流运算后的元素个数
+- Optional\<I> max(Comparator<? super I>comparator)：获取此流运算后的最大值元素
+- Optional\<I> min(Comparator<? super I> comparator)：获取此流运算后的最小值元素
 
+**收集Stream流**（Stream提供）：
 
+- R collect(Collector collector)：把流处理后的结果收集到一个指定的集合中去
+- Object[] toArray()：把流处理后的结果收集到一个数组中去
 
+Collectors工具类提供具体收集方式：
 
+- public static \<T> Collector toList()：把元素收集到List集合中
+- public static \<T> Collector toSet()：把元素收集到Set集合中
+- public static Collector toMap(Function keyMapper ，Function valueMapper)：把元素收集到Map集合中
+
+~~~java
+List<Student> students = new ArrayList<>();
+Student s1=new Student("蜘蛛精", 26, 172.5);
+Student s2=new Student("蜘蛛精", 26, 172.5);
+Student s3=new Student("紫霞", 23, 167.6);
+Student s4=new Student("白晶晶", 25, 169.0);
+Student s5=new Student("牛庵王", 35, 183.3);
+Student s6=new Student("牛夫人", 34, 168.5);
+Collections.addAll(students, s1, s2, s3,s4, s5, s6);
+//需求1：请计算出身高超过168的学生有几人。
+System.out.println("需求1：请计算出身高超过168的学生有几人。");
+long count = students.stream().filter(s -> s.getHeight() > 168).count();
+System.out.println(count);
+
+//需求2：请找出身高最高的学生对象，并输出。
+System.out.println("需求2：请找出身高最高的学生对象，并输出。");
+Student student1 = students.stream().max((o1, o2) -> Double.compare(o1.getHeight(), o2.getHeight())).get();
+System.out.println(student1);
+
+//需求3：请找出身高最矮的学生对象，并输出。
+System.out.println("需求3：请找出身高最矮的学生对象，并输出。");
+Student student2 = students.stream().min((o1, o2) -> Double.compare(o1.getHeight(), o2.getHeight())).get();
+System.out.println(student2);
+
+//需求4：请找出身高超过170的学生对象，并放到一个新集合中去返回。
+System.out.println("需求4：请找出身高超过170的学生对象，并放到一个新集合中去返回。");
+System.out.println("list:");
+List<Student> collect1 = students.stream().filter(s -> s.getHeight() > 170).collect(Collectors.toList());
+System.out.println(collect1);
+
+System.out.println("set:");
+Set<Student> collect2 = students.stream().filter(s -> s.getHeight() > 170).collect(Collectors.toSet());
+System.out.println(collect2);
+
+//需求5：请找出身高超过170的学生对象，并把学生对象的名字和身高，存入到一个Map集合返回。
+System.out.println("需求5：请找出身高超过170的学生对象，并把学生对象的名字和身高，存入到一个Map集合返回。");
+// 方法1：利用collect()
+System.out.println("方法1：利用collect()");
+Map<String, Double> map = students.stream().filter(s -> s.getHeight() > 170).distinct().collect(Collectors.toMap(Student::getName, Student::getHeight)); // toMap()不能自动过滤相同key值元素，需要手动加入distinct()来过滤
+System.out.println(map);
+
+// 方法2：利用toArray()
+System.out.println("方法2：利用toArray()");
+Object[] array = students.stream().filter(s -> s.getHeight() > 170).toArray();
+System.out.println(Arrays.toString(array));
+~~~
 
 
 
