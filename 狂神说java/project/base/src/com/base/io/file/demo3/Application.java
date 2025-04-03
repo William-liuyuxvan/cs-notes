@@ -1,4 +1,4 @@
-package com.base.io.file.Demo3;
+package com.base.io.file.demo3;
 
 import java.io.File;
 import java.util.Arrays;
