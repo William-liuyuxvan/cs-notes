@@ -201,19 +201,23 @@ IO流体系
 1. 字节流：以字节形式读入写出，适用于所有类型文件
    1. InputStream 抽象类
       - FileInputStream 实现类
+        - BufferedInputStream 字节缓冲输入流
    2. OutputStream 抽象类
       - FileOutputStream 实现类
+        - BufferedOutputStream 字节缓冲输出流
 2. 字符流：以字符形式读入写出，只适用于纯文本文件
    1. Reader 抽象类
       - FileReader 实现类
+        - BufferedReader 字符缓冲输入流
    2. Writer 抽象类
       - FileWriter 实现类
+        - BufferedWriter 字符缓冲输出流
 
 ---
 
-## FileInputStream
+## FileInputStream -- 文件字节输入流
 
-内存为基准，可以把磁盘文件中的数据以字节的形式读入到内存中去。
+内存为基准，可以**把磁盘文件中的数据以字节的形式读入到内存中**去。
 
 - public FileInputStream(File file)：创建字节输入流管道与源文件接通。
 - public FileInputStream(String pathname)：创建字节输入流管道与源文件接通。
@@ -226,9 +230,9 @@ IO流体系
 
 -----
 
-## FileOutputStream
+## FileOutputStream -- 文件字节输入流
 
-内存为基准，把内存中的数据以字节的形式写出到文件中去。
+内存为基准，把**内存中的数据以字节的形式写出到文件中**去。
 
 - public FileOutputStream(File file)：创建字节输出流管道与源文件对象接通
 - public FileOutputStream(String filepath)：创建字节输出流管道与源文件路径接通
@@ -333,7 +337,343 @@ try (InputStream is = new FileInputStream("base\\src\\com\\base\\io\\test.txt");
 System.out.println("拷贝成功");
 ~~~
 
-   
+-----
+
+ ## FileReader -- 文件字符输入流
+
+内存为基准，可以**把文件中的数据以字符的形式读入到内存中**去。
+
+- public FileReader(File file)：创建字符输入流管道与源文件接通
+- public FileReader(String pathname)：创建字符输入流管道与源文件接通
+- public int read()：每次读取一个字符返回，如果发现没有数据可读会返回-1.
+- public int read(char[] buffer)：每次用一个字符数组去读取数据，返回字符数组读取了多少个字符，如果发现没有数据可读会返回-1.
+
+-------
+
+## FileWriter -- 文件字符输出流
+
+内存为基准，**把内存中的数据以字符的形式写出到文件中**去。
+
+- public FileWriter(File file)：创建字节输出流管道与源文件对象接通
+- public FileWriter(String filepath)：创建字节输出流管道与源文件路径接通
+- public FileWriter(File file, boolean append)：创建字节输出流管道与源文件对象接通，可追加数据
+- public FileWriter(String filepath, boolean append)：创建字节输出流管道与源文件路径接通，可追加数据
+- void write(int c)：写一个字符
+- void write(String str)：写一个字符串
+- void write(String str, int off, int len)：写一个字符串的一部分
+- void write(char[] cbuf)：写入一个字符数组
+- void write(char[ cbuf, int off, int len)：写入字符数组的一部分
+
+**注意**：字符输出流写出数据后，**必须刷新流，或者关闭流**，写出去的数据才能生效。
+
+**原因**：由于每次写数据调用write()时都进行系统调用的话，会很耗时，效率低、占用资源，因此在字符输出流中做了优化。先开辟出一块缓冲区进行装填数据，如果**flush()**或者**close()**（close中包含flush操作），就会系统调用一次，进行写入磁盘操作，如果缓冲区装满后还需要写数据，那么系统会自动进行系统调用将缓冲区内容写入磁盘文件，然后再进行write操作。
+
+---
+
+## 缓冲流
+
+对原始流进行包装，以提高原始流读写数据的性能。
+
+**字节缓冲流**的作用：提高字节流读写数据的性能。
+		原理：字符缓冲输入流自带了8KB的缓冲池，字符缓冲输出流自带了8KB的缓冲池。
+
+- public BufferedInputStream(InputStream is (, int lengh))：把低级的字节输入流包装成一个高级的缓冲字节输入流，从而提高读数据的性能，lengh为可自定义缓冲区大小
+- public BufferedOutputStream(OutputStream os (, int lengh))：把低级的字节输出流包装成一个高级的缓冲字节输出流，从而提高写数据的性能，lengh为可自定义缓冲区大小
+
+**字符缓冲流**的作用：提高字符流读写数据的性能。
+		原理：字符缓冲输入流自带了8KB的缓冲池，字符缓冲输出流自带了8KB的缓冲池。
+
+BufferedReader：
+
+- public BufferedReader(Reader r (, int lengh))：把低级的字符输入流包装成字符缓冲输入流管道，从而提高字符输入流读字符数据的性能，lengh为可自定义缓冲区大小
+- public String readLine()：读取一行数据返回，如果没有数据可读了，会返回null
+
+BufferedWriter：
+
+- public BufferedWriter(Writer r (, int lengh))：把低级的字符输出流包装成一个高级的缓冲字符输出流管道，从而提高字符输出流写数据的性能，lengh为可自定义缓冲区大小
+- public void newLine()：换行
+
+**注意**：字符数组的大小越大读写速度越快，但是当大到一定程度后，速度并不会提高很多，因为当数组大的话装填和倒出数据耗时也会增加。  当FileInputStream设置的数组大小与BufferedInputStream的默认大小8KB一样时，可能还是BufferedInputStream速度更快，原因是BufferedInputStream是动态进行的，如果缓冲区中的数据不足，那么会自动先从底层流中读取更多的数据来填充缓冲区，而FileInputStream是静态的。
+
+----
+
+## 转换流
+
+**InputStreamReader**：继承Reader，解决不同编码时，读取内容乱码问题。
+
+​	**解决思路**：先获取文件的原始字节流，再将其按真实的字符集编码转成字符输入流，这样字符输入流中的字符就不乱码了。
+
+- public InputStreamReader(InputStream is)：把原始的字节输入流，按照代码默认编码转成字符输入流（与直接用FileReader的效果一样）
+- public InputStreamReader(InputStream is , **String charset**)：把原始的字节输入流，按照指定字符集编码转成字符输入流(重点)
+
+```java
+try (
+        FileInputStream is = new FileInputStream("base/src/com/base/io/io/conversion_flow/test.txt");
+        Reader isr = new InputStreamReader(is, "GBK");
+        BufferedReader br = new BufferedReader(isr);
+) {
+    String s = null;
+    while ((s = br.readLine()) != null) {
+        System.out.println(s);
+    }
+    System.out.println("读取完成！");
+} catch (Exception e) {
+    throw new RuntimeException(e);
+}
+```
+
+**InputStreamWriter**（用的不多）：继承Writer，控制写出去的字符使用编码格式。当然也可以使用String中的getByte(String charset)来指定编码格式。
+
+​	**解决思路**：获取字节输出流，再按照指定的字符集编码将其转换成字符输出流，以后写出去的字符就会用该字符集编码了。
+
+- public OutputStreamWriter(OutputStream os)：可以把原始的字节输出流，按照代码默认编码转换成字符输出流。
+- public OutputStreamWriter(OutputStream os, **String charset**)：可以把原始的字节输出流，按照指定编码转换成字符输出流（重点）
+
+~~~java
+try (
+        FileOutputStream fos = new FileOutputStream("base\\src\\com\\base\\io\\io\\conversion_flow\\testOut.txt");
+        OutputStreamWriter osw = new OutputStreamWriter(fos, "GBK");
+        BufferedWriter bw = new BufferedWriter(osw)){
+    bw.write("s");
+    bw.newLine();
+    bw.write("liu");
+} catch (Exception e) {
+    e.printStackTrace();
+}
+~~~
+
+-----
+
+## 打印流
+
+PrintStream/PrintWriter：使用都很方便，**性能高效**。
+
+PrintStream：
+
+- public **PrintStream**(OutputStream/File/**String**)：打印流直接通向字节输出流/文件/文件路径
+- public PrintStream(String fileName, Charset charset)：可以指定写出去的字符编码
+- public PrintStream(OutputStream out, boolean autoFlush)：可以指定实现自动刷新
+- public PrintStream(OutputStream out, boolean autoFlush, String encoding)：可以指定实现自动刷新，并可指定字符的编码
+- public void **println(Xxx xx)**：打印任意类型的数据出去
+- public void write(int/byte[]/byte[]一部分)：可以支持写**字节**数据出去
+
+PrintWriter：
+
+- public **PrintWriter**(OutputStream/Writer/File/**String**)：打印流直接通向字节输出流/文件/文件路径
+- public PrintWriter(String fileName, Charset charset)：可以指定写出去的字符编码
+- public PrintWriter(OutputStream out/Writer, boolean autoFlush)：可以指定实现自动刷新
+- public PrintWriter(OutputStream out, boolean autoFlush, String encoding)：可以指定实现自动刷新，并可指定字符的编码
+- public void **println(Xxx xx)**：打印任意类型的数据出去
+- public void write(int/String/char[]/..)：可以支持写**字符**数据出去
+
+如果想要追加数据，则需要创建低级流进行封装new FileOutputStream(String pathName, ture);
+
+**应用**：将打印数据打印到指定的文件中，而不是控制台。
+
+~~~java
+try (
+        PrintStream out = new PrintStream(new FileOutputStream("base/src/com/base/io/io/print_flow/out.txt", true)); // 追加数据
+        ) {
+    System.setOut(out); // 设置自己的打印流
+    System.out.println("hello printstream!");
+}catch (Exception e) {
+    e.printStackTrace();
+}
+~~~
+
+-----
+
+## 数据流
+
+**DataOutputStream**：数据输出流，将数据和其类型一并写出去。
+
+- public **DataoutputStream(OutputStream out)**：创建新数据输出流包装基础的字节输出流
+- public final void **writeByte(int v)** throws IOException：将**byte类型的数据**写入基础的字节输出流
+- public final void **writeInt(int v)** throws IOException：将**int类型的数据**写入基础的字节输出流
+- public final void **writeDouble(Double v)** throws IOException：将**double类型的数据**写入基础的字节输出流
+- public final void **writeUTF(String str)** throws IOException：将**字符串数据以UTF-8编码成字节**写入基础的字节输出流
+- public void write(int/byte[]/byte[]一部分)：**支持写字节**数据出去
+
+```java
+try (
+        DataOutputStream dos = new DataOutputStream(Files.newOutputStream(Paths.get("base\\src\\com\\base\\io\\io\\data_flow\\test.txt")));
+        ) {
+    dos.writeByte(97);
+    dos.writeInt(1111);
+    dos.writeDouble(1.11);
+    dos.writeUTF("撒地方撒地方");
+
+    dos.write(79);
+} catch (Exception e) {
+    e.printStackTrace();
+}
+```
+
+**DataInputStream**：数据输入流，读取数据输出流写出去的数据。
+
+- public **DataInputStream(InputStream is)**：创建新数据输入流包装基础的字节输入流
+- public final byte **readByte()** throws IoException：读取字节数据返回
+- public final int **readInt()** throws IoException：读取int类型的数据返回
+- public final double readDouble() throws IoException：读取double类型的数据返回
+- public final String **readUTF()** throws IoException：读取字符串数（UTF-8）据返回
+- public int readInt()/read(byte[])：**支持读字节**数据进来
+
+```java
+try (
+        DataInputStream dis = new DataInputStream(Files.newInputStream(Paths.get("base\\src\\com\\base\\io\\io\\data_flow\\test.txt")));
+        PrintStream ps = new PrintStream("base\\src\\com\\base\\io\\io\\data_flow\\printTest.txt");
+        ) {
+    System.setOut(ps);
+    System.out.println(dis.readByte());
+    System.out.println(dis.readInt());
+    System.out.println(dis.readDouble());
+    System.out.println(dis.readUTF());
+
+    System.out.println(dis.read());
+} catch (Exception e) {
+    e.printStackTrace();
+}
+```
+
+----
+
+## 序列化流
+
+**序列化**：把java对象写入到文件中去
+
+ObjectOutputStream：对象字节输出流，将java对象序列化
+
+- public ObjectoutputStream(OutputStream out)：创建对象字节输出流，包装基础的字节输出流
+- public final void writeObject(Object o) throws IOException：把对象写出去
+
+```java
+try (
+        ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(Paths.get("base/src/com/base/io/io/object_flow/testOut.txt")));
+        ) {
+    User user = new User("admin", "张三", 19, "123123");
+    oos.writeObject(user);
+} catch (Exception e) {
+    throw new RuntimeException(e);
+}
+```
+
+**反序列化**：把文件中存储的java对象读出来
+
+ObjectInputStream：对象字节输入流，将java对象反序列化
+
+- public ObjectInputStream(InputStream is)：创建对象字节输入流，包装基础的字节输入流
+- public final object readObject()：把存储在文件中的Java对象读出来
+
+```java
+try (
+        ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(Paths.get("base/src/com/base/io/io/object_flow/testOut.txt")))
+            ) {
+    User user = (User) ois.readObject();
+    System.out.println(user);
+} catch (Exception ioe) {
+    ioe.printStackTrace();
+}
+```
+
+**注意**：
+
+1. 如果java对象可以被序列化的话，那么需要在类中实现接口java.io.Serializable，告诉虚拟机可以进行序列化，然后进行处理。
+2. 如果在可序列化类中有数据不想被存储的话，需要添加关键词transient。
+3. 如果向要一次性序列化多个对象，则可以使用ArrayList集合存储对个对象，然后对集合进行序列化，**ArrayList集合实现了序列化接口**
+
+User类：
+
+```java
+public class User implements java.io.Serializable {
+    private String loginName;
+    private String userName;
+    private int age;
+    private transient String passWord;
+
+    public User() {
+    }
+
+    public User(String loginName, String userName, int age, String passWord) {
+        this.loginName = loginName;
+        this.userName = userName;
+        this.age = age;
+        this.passWord = passWord;
+    }
+
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getPassWord() {
+        return passWord;
+    }
+
+    public void setPassWord(String passWord) {
+        this.passWord = passWord;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "loginName='" + loginName + '\'' +
+                ", userName='" + userName + '\'' +
+                ", age=" + age +
+                ", passWord='" + passWord + '\'' +
+                '}';
+    }
+}
+```
+
+-----
+
+## IO框架
+
+**Commons-io**：apache开源基金组织提供的一组有关lO操作的小框架，目的是**提高lO流的开发效率**。
+
+**FileUtils类**提供部分方法：
+
+- public static void copyFile(File srcFile, File destFile)：复制文件。
+- public static void copyDirectory(File srcDir,File destDir)：复制文件夹public staticvoid 
+- public static void deleteDirectory(File directory)：删除文件夹
+- public static String readFileToString(File file, String encoding)：读数据
+- public static void writeStringToFile(File file, String data, String charname, boolean append)：写数据
+
+Files类提供的部分方法
+
+- public static int copy(InputStream inputStream, OutputStream outputStream)复制文件。
+- public static int copy(Reader reader, Writer writer)复制文件。
+- public static void write(String data, OutputStream output, String charsetName)写数据
+
+```java
+FileUtils.copyFile(new File("base\\src\\com\\base\\io\\test.txt"), new File("base\\src\\com\\base\\io\\commonsio\\a.txt"));
+FileUtils.delete(new File("base\\src\\com\\base\\io\\commonsio\\a.txt"));
+String str = FileUtils.readFileToString(new File("base\\src\\com\\base\\io\\commonsio\\a.txt"));
+System.out.println(str);
+
+Files.copy(Paths.get("base\\src\\com\\base\\io\\test.txt"), Paths.get("base\\src\\com\\base\\io\\commonsio\\b.txt"));
+```
+
+
 
 
 
