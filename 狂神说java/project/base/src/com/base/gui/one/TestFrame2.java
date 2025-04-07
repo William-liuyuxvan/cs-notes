@@ -1,6 +1,5 @@
-package com.base.gui;
+package com.base.gui.one;
 
-import javax.swing.*;
 import java.awt.*;
 
 /**

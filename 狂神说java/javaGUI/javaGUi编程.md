@@ -164,7 +164,49 @@ class MyMonitor implements ActionListener {
 }
 ~~~
 
+#### 5. 输入框TextField
 
+​	输入框，不能换行，但是可以利用actionPerformed进行回车监听，TextArea可以换行。
+
+```java
+public class TestTextField {
+    public static void main(String[] args) {
+        new MyFrame();
+    }
+}
+
+class MyFrame extends Frame {
+    public MyFrame() {
+        TextField textField = new TextField();
+        add(textField);
+
+        MyMonitor myMonitor = new MyMonitor();
+        textField.addActionListener(myMonitor);
+
+        textField.setEchoChar('*'); // 设置输入展示，密码形式
+
+        addWindowListener(myMonitor);
+
+        pack();
+        setVisible(true);
+    }
+}
+
+class MyMonitor extends WindowAdapter implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        TextField textField = (TextField) e.getSource();
+        System.out.println(textField.getText());
+        textField.setText(""); // 回车后清空
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        System.exit(0);
+    }
+}
+```
 
 
 

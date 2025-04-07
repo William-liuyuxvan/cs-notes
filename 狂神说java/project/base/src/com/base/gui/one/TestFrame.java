@@ -1,4 +1,4 @@
-package com.base.gui;
+package com.base.gui.one;
 
 import java.awt.*;
 
