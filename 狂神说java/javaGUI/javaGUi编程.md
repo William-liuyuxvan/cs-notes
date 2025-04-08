@@ -477,29 +477,163 @@ addKeyListener(new KeyAdapter() {
 
 
 
+## 2.Swing -- 对AWT的再封装升级
+
+#### 1. 弹窗
+
+默认有隐藏窗口，不要输入WindowConstants.EXIT_ON_CLOSE
+
+```java
+class MyDialog extends JDialog {
+    public MyDialog() {
+        setBounds(100, 100, 450, 300);
+        setVisible(true);
+
+        Container container = getContentPane();
+        container.setLayout(new GridLayout(1,1));
+        container.add(new Label("asdfasfasdf af asf "));
+    }
+}
+```
 
 
 
+#### 2. 标签
 
+##### 2.1 标签 label
 
+~~~java
+new JLabel("xxx");
+~~~
 
-## 2.Swing
+##### 2.2 图标  icon
 
+```java
+public class TestIcon extends JFrame implements Icon {
 
+    private int width;
+    private int height;
 
+    public TestIcon() {}
 
+    public TestIcon(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
 
+    public void init() {
+        TestIcon icon = new TestIcon(15, 15);
+        Container contentPane = getContentPane();
+        contentPane.add(new JLabel("icon", icon, SwingConstants.CENTER));
 
+        setBounds(100, 100, 600, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+    }
 
+    public static void main(String[] args) {
+        new TestIcon().init();
+    }
 
+    @Override
+    public void paintIcon(Component c, Graphics g, int x, int y) {
+        g.fillOval(x, y, width, height);
+    }
 
+    @Override
+    public int getIconWidth() {
+        return this.getWidth();
+    }
 
+    @Override
+    public int getIconHeight() {
+        return this.getHeight();
+    }
+}
+```
 
+##### 2.3 图片 ImageIcon
 
+在TestImageIcon.class.getResource("lyx.jpeg");的时候可能是因为target目录下没有相应的文件，找不到。
 
+```java
+public class TestImageIcon extends JFrame {
+    public static void main(String[] args) {
+        new TestImageIcon().init();
+    }
 
+    private void init() {
+        setBounds(100, 100, 450, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
 
+        JLabel jLabel = new JLabel("a ");
+        URL url = TestImageIcon.class.getResource("lyx.jpeg");
 
+        ImageIcon imageIcon = new ImageIcon(url);
+
+        jLabel.setIcon(imageIcon);
+        jLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        getContentPane().add(jLabel);
+    }
+}
+```
+
+##### 2.4 面板
+
+```java
+public class TestJPanel extends JFrame {
+
+    public TestJPanel() {
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 450, 300);
+
+        Container container = getContentPane();
+        container.setLayout(new GridLayout(1, 2, 10,10));
+        JPanel jPanel1 = new JPanel(new GridLayout(2, 1, 5, 5));
+        JPanel jPanel2 = new JPanel(new GridLayout(2, 1, 1,1));
+
+        jPanel1.add(new JButton("1"));
+        jPanel1.add(new JButton("1"));
+        jPanel2.add(new JButton("2"));
+        jPanel2.add(new JButton("2"));
+
+        container.add(jPanel1);
+        container.add(jPanel2);
+
+    }
+
+    public static void main(String[] args) {
+        new TestJPanel();
+    }
+}
+```
+
+##### 2.5 滚动面板
+
+```java
+public class TestJScrollPanel extends JFrame {
+
+    public TestJScrollPanel() {
+        // 基本设置
+        setVisible(true);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setBounds(100, 100, 450, 300);
+
+        // 添加文本域到滚动面板中
+        JScrollPane scrollPane = new JScrollPane(new JTextArea("欢迎来到这大千世界！", 10,20));
+
+        // 将面板添加到容器中
+        getContentPane().add(scrollPane);
+    }
+
+    public static void main(String[] args) {
+        new TestJScrollPanel();
+    }
+}
+```
 
 
 
