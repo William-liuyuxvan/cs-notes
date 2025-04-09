@@ -82,7 +82,7 @@ frame.setVisible(true);
 
 #### 3. 布局管理器
 
-- 流式布局 -> FlowLayout
+- 流式布局 -- FlowLayout
 
   `new FlowLayout(FlowLayout.LEFT);` 
 
@@ -103,7 +103,7 @@ frame.setVisible(true);
 
   
 
-- 东西南北中 -> BorderLayou
+- 东西南北中 -- BorderLayou
 
   五个方位布局
 
@@ -127,7 +127,7 @@ frame.setVisible(true);
 
   
 
-- 表格布局 -> GridLayout
+- 表格布局 -- GridLayout
 
   `new GridLayout(2,3)`
 
@@ -150,7 +150,7 @@ frame.setVisible(true);
 
 
 
-#### 4. 事件监听
+#### 4. 事件监听 -- implements ActionListener
 
 ​	自写监听器需要继承ActionListener，可以通过e.getActionCommand()获取名字（如果组件运用了setActionCommand()则获取设置的command信息），然后进行精确监听操作。
 
@@ -172,7 +172,7 @@ class MyMonitor implements ActionListener {
 
 
 
-#### 5. 输入框TextField
+#### 5. 输入框 -- TextField
 
 ​	输入框，不能换行，但是可以利用actionPerformed进行回车监听，TextArea可以换行。
 
@@ -345,7 +345,7 @@ class Calculator extends Frame {
 
 
 
-#### 6. 画笔paint
+#### 6. 画笔 -- paint(Graphics g)
 
 ```java
 public class TestPaint {
@@ -379,7 +379,7 @@ class MyPaint extends Frame {
 
 
 
-#### 7. 鼠标监听
+#### 7. 鼠标监听 -- extends MouseAdapter
 
 目的：实现鼠标点击画图--画点
 
@@ -457,7 +457,7 @@ WindowListener是接口，WindowAdapter是实现类，一般继承WindowAdapter�
 
 
 
-#### 9. 键盘监听
+#### 9. 键盘监听 -- addKeyListener(new KeyAdapter()
 
 使用 KeyEvent.VK_ 开头的加上需要判断的字符即可
 
@@ -479,7 +479,7 @@ addKeyListener(new KeyAdapter() {
 
 ## 2.Swing -- 对AWT的再封装升级
 
-#### 1. 弹窗
+#### 1. 弹窗 -- extends JDialog
 
 默认有隐藏窗口，不要输入WindowConstants.EXIT_ON_CLOSE
 
@@ -500,13 +500,15 @@ class MyDialog extends JDialog {
 
 #### 2. 标签
 
-##### 2.1 标签 label
+##### 2.1 标签 -- label
 
 ~~~java
 new JLabel("xxx");
 ~~~
 
-##### 2.2 图标  icon
+
+
+##### 2.2 图标 --  icon
 
 ```java
 public class TestIcon extends JFrame implements Icon {
@@ -552,7 +554,9 @@ public class TestIcon extends JFrame implements Icon {
 }
 ```
 
-##### 2.3 图片 ImageIcon
+
+
+##### 2.3 图片 -- ImageIcon
 
 在TestImageIcon.class.getResource("lyx.jpeg");的时候可能是因为target目录下没有相应的文件，找不到。
 
@@ -580,7 +584,9 @@ public class TestImageIcon extends JFrame {
 }
 ```
 
-##### 2.4 面板
+
+
+##### 2.4 面板 -- JPanel
 
 ```java
 public class TestJPanel extends JFrame {
@@ -611,7 +617,9 @@ public class TestJPanel extends JFrame {
 }
 ```
 
-##### 2.5 滚动面板
+
+
+##### 2.5 滚动面板 -- JScrollPane
 
 ```java
 public class TestJScrollPanel extends JFrame {
@@ -634,6 +642,232 @@ public class TestJScrollPanel extends JFrame {
     }
 }
 ```
+
+
+
+##### 2.6 图片按钮 -- new JButton(icon)
+
+```java
+public class TestIconButton extends JFrame {
+
+    public TestIconButton() {
+        setVisible(true);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setBounds(100, 100, 450, 300);
+
+        URL url = TestIconButton.class.getResource("image.jpg");
+        ImageIcon icon = new ImageIcon(url);
+
+        JButton button = new JButton(icon);
+        button.setToolTipText("imageicon");
+
+        getContentPane().add(button);
+    }
+
+    public static void main(String[] args) {
+        new TestIconButton();
+    }
+}
+```
+
+
+
+##### 2.7 单选框 -- JRadioButton
+
+在单选框中只允许选择一个，因此需要用到 ButtonGroup 进行分成一个组，但是添加按钮的话也是用container进行添加button，而不是buttongroup。
+
+```java
+public class TestJRadioButton extends JFrame {
+
+    public TestJRadioButton() {
+        setVisible(true);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setBounds(100, 100, 450, 300);
+
+        JRadioButton button1 = new JRadioButton("btn1");
+        JRadioButton button2 = new JRadioButton("btn2");
+        JRadioButton button3 = new JRadioButton("btn3");
+
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(button1);
+        buttonGroup.add(button2);
+        buttonGroup.add(button3);
+
+        getContentPane().add(button1, BorderLayout.NORTH);
+        getContentPane().add(button2, BorderLayout.CENTER);
+        getContentPane().add(button3, BorderLayout.SOUTH);
+    }
+
+    public static void main(String[] args) {
+        new TestJRadioButton();
+    }
+}
+```
+
+
+
+##### 2.8多选框 -- JCheckBox
+
+```java
+public class TestJCheckBox extends JFrame {
+
+    public TestJCheckBox() {
+        setVisible(true);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setBounds(100, 100, 450, 300);
+
+        JCheckBox checkBox1 = new JCheckBox("多选1");
+        JCheckBox checkBox2 = new JCheckBox("多选2");
+        JCheckBox checkBox3 = new JCheckBox("多选3");
+
+        getContentPane().setLayout(new FlowLayout());
+        getContentPane().add(checkBox1);
+        getContentPane().add(checkBox2);
+        getContentPane().add(checkBox3);
+    }
+
+    public static void main(String[] args) {
+        new TestJCheckBox();
+    }
+}
+```
+
+
+
+##### 2.9 下拉框 -- JComboBox<>()
+
+```java
+public class TestJComboBox extends JFrame {
+
+    public TestJComboBox() {
+        setVisible(true);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setBounds(100, 100, 450, 300);
+
+        Container container = getContentPane();
+
+        JComboBox status = new JComboBox();
+
+        status.addItem("选项1");
+        status.addItem("选项2");
+        status.addItem("选项3");
+        status.addItem("选项4");
+
+        container.add(status);
+    }
+
+    public static void main(String[] args) {
+        new TestJComboBox();
+    }
+}
+```
+
+
+
+##### 2.10 列表框 -- JList
+
+静态添加删除内容 String[]：
+
+```java
+public class TestJList extends JFrame {
+
+    public TestJList() {
+        setVisible(true);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setBounds(100, 100, 450, 300);
+
+        Container container = getContentPane();
+
+        String[] str = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
+        JList list = new JList(str);
+//        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scrollPane = new JScrollPane(list);
+        container.add(scrollPane);
+    }
+
+    public static void main(String[] args) {
+        new TestJList();
+    }
+}
+```
+
+动态添加删除内容 Vector：
+
+```java
+public class TestJList extends JFrame {
+
+    public TestJList() {
+        setVisible(true);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setBounds(100, 100, 450, 300);
+
+        Container container = getContentPane();
+
+        Vector vector = new Vector();
+        JList list = new JList(vector);
+//        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scrollPane = new JScrollPane(list);
+        container.add(scrollPane);
+
+        vector.add("1");
+        vector.add("1");
+        vector.add("1");
+    }
+
+    public static void main(String[] args) {
+        new TestJList();
+    }
+}
+```
+
+- **应用场景**：
+
+  - 选择地区，或者一些单个选项 -> 下拉框（节省内存获取）
+
+  - 列表，展示信息，一般是动态扩容 -> 列表框
+
+
+
+##### 2.11 密码框 -- JPasswordField
+
+除了利用JTextField中的方法setEchoChar('*')外，还有一个类是**JPasswordField**，默认显示为 · ，也可以利用setEchoChar()来设置其他的显示方式。
+
+```java
+public class TestJPasswordField extends JFrame {
+
+    public TestJPasswordField() {
+        setVisible(true);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setBounds(100, 100, 450, 300);
+
+        JPasswordField passwordField = new JPasswordField(20);
+
+        getContentPane().add(passwordField);
+    }
+    
+    public static void main(String[] args) {
+        new TestJPasswordField();
+    }
+}
+```
+
+
+
+##### 2.12 文本域 -- JTextArea    new JTextArea(20, 50)
+
+
+
+## 贪吃蛇Demo
+
+见 `狂神说java\project\base\src\com\base\gui\snakeDemo`
+
+
+
+
+
+
+
+
 
 
 
