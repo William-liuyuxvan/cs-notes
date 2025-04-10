@@ -1,0 +1,48 @@
+第一阶段：Java基础
+	java零基础学习
+	常用类
+	集合
+	io
+	gui
+	网络编程
+	多线程基础
+	注解和反射
+	javase回顾总结
+	JVM入门
+	IUC并发编程
+
+第二阶段：前端基础
+	HTML
+	CSS
+	JavaScript和jQuery
+
+第三阶段：MySQL数据库
+	MySQL
+
+第四阶段：JavaWeb
+	JavaWeb：Maven、Tomcat、基本的Http通信、Servlet、Jsp、网站常用功能开发
+
+第五阶段：SSM框架
+	MyBatis
+	Spring
+	SpringMVC
+	SSM框架整合
+
+第六阶段：微服务入门
+	Vue以及前端进阶、webpack NodeJS
+	SpringBoot
+	Swagger
+	SpringCloud
+	分析开源项目
+
+
+第七阶段：基本运维及协同开发
+	Linux服务器
+	Linux基本使用
+	Git
+
+阶段八：面试加分技能栈进阶
+	MyBatis-Plus
+	Redis
+	ElasticSerch
+	实战仿京东搜索

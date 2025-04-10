@@ -1,0 +1,13 @@
+package com.base.io.io.fileinputstream;
+
+/**
+ * @ClassName Demo1
+ * @Description TODO
+ * @Author eeekuu
+ * @Date 2025/4/3 19:56
+ */
+public class Demo1 {
+    public static void main(String[] args) {
+
+    }
+}
