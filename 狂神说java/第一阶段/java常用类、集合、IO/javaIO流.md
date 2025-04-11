@@ -383,12 +383,12 @@ System.out.println("拷贝成功");
 **字符缓冲流**的作用：提高字符流读写数据的性能。
 		原理：字符缓冲输入流自带了8KB的缓冲池，字符缓冲输出流自带了8KB的缓冲池。
 
-BufferedReader：
+**BufferedReader**：
 
 - public BufferedReader(Reader r (, int lengh))：把低级的字符输入流包装成字符缓冲输入流管道，从而提高字符输入流读字符数据的性能，lengh为可自定义缓冲区大小
 - public String readLine()：读取一行数据返回，如果没有数据可读了，会返回null
 
-BufferedWriter：
+**BufferedWriter**：
 
 - public BufferedWriter(Writer r (, int lengh))：把低级的字符输出流包装成一个高级的缓冲字符输出流管道，从而提高字符输出流写数据的性能，lengh为可自定义缓冲区大小
 - public void newLine()：换行
