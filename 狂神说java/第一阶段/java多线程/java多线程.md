@@ -1013,7 +1013,373 @@ class BuyTicket implements Runnable {
 
 
 
+## 14. 管程法 -> 添加缓冲区
 
+
+
+```java
+public class TestPC {
+
+    public static void main(String[] args) {
+        SynProduct synProduct = new SynProduct();
+
+        new Thread(new Producer(synProduct)).start();
+        new Thread(new Consumer(synProduct)).start();
+    }
+}
+
+
+class SynProduct {
+
+    private Product[] products;
+    private int length;
+
+    public SynProduct() {
+        init();
+    }
+
+    private void init() {
+        this.products = new Product[10];
+        this.length = 0;
+    }
+
+    // 添加商品
+    public synchronized void addProduct(Product product) {
+        while (this.length >= this.products.length) {
+            try {
+                this.wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        this.products[length++] = product;
+
+        this.notifyAll();
+    }
+
+    public synchronized Product getProduct() {
+        while (this.length == 0) {
+            try {
+                this.wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        Product product = this.products[--length];
+
+        this.notifyAll();
+
+        return product;
+    }
+
+
+}
+
+class Producer implements Runnable {
+
+    private final SynProduct synProduct;
+
+    public Producer(SynProduct synProduct) {
+        this.synProduct = synProduct;
+    }
+
+    @Override
+    public void run() {
+        for (int i = 1; i <= 100; i++) {
+            synProduct.addProduct(new Product(i));
+            System.out.println("生产了：" + i + "个产品");
+        }
+    }
+}
+
+class Consumer implements Runnable {
+
+    private final SynProduct synProduct;
+
+    Consumer(SynProduct synProduct) {
+        this.synProduct = synProduct;
+    }
+
+    @Override
+    public void run() {
+        for (int i = 1; i <= 100; i++) {
+            System.out.println("消费了第 " + synProduct.getProduct().getId());
+        }
+    }
+}
+
+class Product {
+
+    private int id;
+
+    public Product(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+}
+```
+
+
+
+## 15. 信号灯法
+
+该例子并不好， 忽略了多个观众的问题
+
+```java
+public class TestPC02 {
+
+    public static void main(String[] args) {
+        TV tv = new TV();
+
+        new Thread(new Player(tv), "表演者1").start();
+        new Thread(new Watcher(tv), "观众1").start();
+//        new Thread(new Watcher(tv), "观众2").start();
+    }
+}
+
+class Player implements Runnable {
+
+    private TV tv;
+
+    public Player(TV tv) {
+        this.tv = tv;
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0; i < 10; i++) {
+            if (i % 2 == 0) tv.play("爱奇艺");
+            else tv.play("腾讯");
+
+            System.out.println(Thread.currentThread().getName() + "表演了" + tv.getShow());
+        }
+    }
+}
+
+class Watcher implements Runnable {
+
+    private TV tv;
+
+    public Watcher(TV tv) {
+        this.tv = tv;
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0; i < 10; i++) {
+            System.out.println(Thread.currentThread().getName() + "观看了" + tv.watch());
+        }
+    }
+}
+
+class TV {
+
+    private String show;
+
+    private static boolean flag; // T 表演  F 观看
+
+    public TV() {
+        init();
+    }
+
+    private void init() {
+        flag = true; // 先表演
+    }
+
+    public String getShow() {
+        return show;
+    }
+
+    public void setShow(String show) {
+        this.show = show;
+    }
+
+    public synchronized void play(String show) {
+        while (!flag) {
+            try {
+                this.wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        this.setShow(show);
+        flag = false;
+        this.notifyAll();
+    }
+
+    public synchronized String watch() {
+        while (flag) {
+            try {
+                this.wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        String s = this.getShow();
+        flag = true;
+        this.notifyAll();
+        return s;
+    }
+}
+```
+
+将表演者设置为守护线程，解决了上面的问题
+
+```java
+public class TestPC02 {
+
+    public static void main(String[] args) {
+        TV tv = new TV();
+
+        Thread thread = new Thread(new Player(tv), "表演者1");
+        thread.setDaemon(true);
+        thread.start();
+        new Thread(new Watcher(tv), "观众1").start();
+        new Thread(new Watcher(tv), "观众2").start();
+    }
+}
+
+class Player implements Runnable {
+
+    private TV tv;
+
+    public Player(TV tv) {
+        this.tv = tv;
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0;; i++) {
+            if (i % 2 == 0) tv.play("爱奇艺");
+            else tv.play("腾讯");
+
+            System.out.println(Thread.currentThread().getName() + "表演了" + tv.getShow());
+        }
+    }
+}
+
+class Watcher implements Runnable {
+
+    private TV tv;
+
+    public Watcher(TV tv) {
+        this.tv = tv;
+    }
+
+    @Override
+    public void run() {
+        for (int i = 0; i < 10; i++) {
+            System.out.println(Thread.currentThread().getName() + "观看了" + tv.watch());
+        }
+    }
+}
+
+class TV {
+
+    private String show;
+
+    private static boolean flag; // T 表演  F 观看
+
+    public TV() {
+        init();
+    }
+
+    private void init() {
+        flag = true; // 先表演
+    }
+
+    public String getShow() {
+        return show;
+    }
+
+    public void setShow(String show) {
+        this.show = show;
+    }
+
+    public synchronized void play(String show) {
+        while (!flag) {
+            try {
+                this.wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        this.setShow(show);
+        flag = false;
+        this.notifyAll();
+    }
+
+    public synchronized String watch() {
+        while (flag) {
+            try {
+                this.wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        String s = this.getShow();
+        flag = true;
+        this.notifyAll();
+        return s;
+    }
+}
+```
+
+
+
+## 16. 线程池
+
+**池化思想**：线程池、字符串常量池、数据库连接池
+
+**提高资源利用率，节约内存**
+
+**优点**：
+
+- 提高线程利用率
+- 提高程序的响应速度
+- 便于统一管理线程对象
+- 可以通知最大并发数
+
+```java
+public class TestThreadPool {
+    public static void main(String[] args) {
+        ExecutorService executorService = new ThreadPoolExecutor(3, 5, 1L, TimeUnit.SECONDS, new ArrayBlockingQueue<>(3), Executors.defaultThreadFactory(), new ThreadPoolExecutor.AbortPolicy());
+
+        for (int i = 0; i < 4; i++) {
+            executorService.execute(() -> {
+                System.out.println(Thread.currentThread().getName() + " 执行");
+            });
+        }
+
+        executorService.shutdown();
+    }
+}
+```
 
 
 
