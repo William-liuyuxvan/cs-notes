@@ -1,6 +1,7 @@
 package com.base.reflection.one;
 
 import java.lang.annotation.*;
+import java.lang.reflect.Field;
 
 /**
  * @ClassName Test08
@@ -9,22 +10,30 @@ import java.lang.annotation.*;
  * @Date 2025/4/13 21:38
  */
 public class Test08 {
-    public static void main(String[] args) throws ClassNotFoundException {
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchFieldException {
         Class c1 = Student.class;
 
-        System.out.println(c1);
+        System.out.println(c1); // class com.base.reflection.one.Student
 
         Annotation[] annotations = c1.getAnnotations();
         for (Annotation annotation : annotations) {
             System.out.println(annotation);
         }
+        /*
+            @com.base.reflection.one.TableLiu(value=db_student)
+         */
 
         // 获取annotation中的值
         TableLiu tableLiu = (TableLiu) c1.getAnnotation(TableLiu.class);
-        System.out.println(tableLiu.value());
+        System.out.println(tableLiu.value()); // db_student
 
         // 获取属性中的注解信息
-        
+        Field id = c1.getDeclaredField("id");
+        System.out.println(id); // private int com.base.reflection.one.Student.id
+        FieldLiu fieldLiu = id.getAnnotation(FieldLiu.class);
+        System.out.println(fieldLiu.columnName()); // db_id
+        System.out.println(fieldLiu.type()); // int
+        System.out.println(fieldLiu.length()); // 10
 
     }
 }
