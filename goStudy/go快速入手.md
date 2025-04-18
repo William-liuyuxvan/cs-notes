@@ -216,6 +216,42 @@ func main() {
 
 
 
+## 7、defer语句
+
+defer关键词运用在方法中，并且执行的顺序是压栈方式（先进后出，后进先出），并且在return后运行，因为是在方法的 } 前执行。
+
+~~~go
+package main
+
+import "fmt"
+
+func deferFunc() int {
+	fmt.Println("deferFunc")
+	return 0
+}
+
+func returnFunc() int {
+	fmt.Println("returnFunc")
+	return 5
+}
+
+func returnAndDefer() int {
+	defer deferFunc()
+	return returnFunc()
+}
+
+var a int = 10
+
+func main() {
+	returnAndDefer()
+}
+
+/*
+returnFunc
+deferFunc
+*/
+~~~
+
 
 
 
