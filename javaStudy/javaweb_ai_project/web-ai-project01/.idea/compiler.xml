@@ -2,6 +2,9 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+      </profile>
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -11,11 +14,20 @@
         <module name="maven-project03" />
         <module name="springboot-web-quickstart" />
       </profile>
+      <profile name="Annotation profile for springboot-web-01" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <processorPath>
+          <entry name="D:/soft/DevelopmentTools/maven/apache-maven-3.9.6/MAVEN-repo/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="springboot-web-01" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17" />
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="springboot-web-01" options="-parameters" />
       <module name="springboot-web-quickstart" options="-parameters" />
     </option>
   </component>
