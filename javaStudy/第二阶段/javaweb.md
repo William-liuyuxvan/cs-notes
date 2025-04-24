@@ -622,9 +622,159 @@ try (
 
 
 
+### 9.2 数据库连接池
+
+- **数据库连接池**是个**容器**，负责分配、管理数据库连接（Connection）。
+
+- 允许应用程序重复使用一个现有的数据库连接，而不是再重新建立一个。
+
+- **释放**空闲时间超过最大空闲时间的连接，来**避免**因为没有释放连接而引起的**数据库连接遗漏**。
+
+  ![image-20250424170933561](javaweb.assets/image-20250424170933561.png)
+
+- **优势**：
+  - 资源复用
+  - 提升系统响应速度
+  - 避免数据库连接遗落
 
 
 
+- 标准接口：**DataSource**
+  - 官方(sun)提供的数据库连接池接口，由第三方组织实现此接口。
+  - 功能：获取连接 `Connection getConnection() throws SQLException`
+
+![image-20250424171435647](javaweb.assets/image-20250424171435647.png)
+
+
+
+![image-20250424171504560](javaweb.assets/image-20250424171504560.png)
+
+
+
+### 9.3 删除用户 -- @Delete
+
+![image-20250424172254741](javaweb.assets/image-20250424172254741.png)
+
+![image-20250424172625049](javaweb.assets/image-20250424172625049.png)
+
+**注意**：
+
+- **\# 是占位符，会替换为 ？ 生成预编译SQL** （推荐）
+- $ 是字符串拼接符号，将参数值直接拼接在SQL中。
+
+
+
+### 9.4 新增用户 -- @Insert
+
+![image-20250424173312800](javaweb.assets/image-20250424173312800.png)
+
+
+
+### 9.5 更新用户 -- @Update
+
+![image-20250424173457677](javaweb.assets/image-20250424173457677.png)
+
+
+
+### 9.6 查询用户 -- @Select
+
+![image-20250424190544135](javaweb.assets/image-20250424190544135.png)
+
+![image-20250424191301858](javaweb.assets/image-20250424191301858.png)
+
+当基于官方的springboot项目骨架的时候，是可以省略@Param注解的，因为在官方的父工程中有maven编译的插件，对parameter进行保留。
+
+![image-20250424191613757](javaweb.assets/image-20250424191613757.png)
+
+
+
+![image-20250424191229673](javaweb.assets/image-20250424191229673.png)
+
+
+
+###  9.7 XML映射配置
+
+![image-20250424193225241](javaweb.assets/image-20250424193225241.png)
+
+==**注意**==：当使用**简单的增删改查的时候直接用Mybatis注解**就行，如果要**实现复杂的SQL功能，使用XML**来配置映射语句。
+
+
+
+如果想自己在resources目录下创建专门的mapper xml映射位置，可以在配置文件中配置mapper路径
+
+![image-20250424200255622](javaweb.assets/image-20250424200255622.png)
+
+![image-20250424200340672](javaweb.assets/image-20250424200340672.png)
+
+java和resources目录下的文件会统一编译到classes字节码文件下，如果指定了mapper路径，则会直接在指定路径下去找对于Mapper.xml文件；如果没有指定，则必须要求resources目录下的文件路径与Mapper.java文件路径相同，代表编译为字节码文件后，xml和java在同一包内，否则找不到。
+
+![image-20250424200648360](javaweb.assets/image-20250424200648360.png)
+
+
+
+## 10、SpringBoot项目配置文件说明
+
+![image-20250424201210026](javaweb.assets/image-20250424201210026.png)
+
+### 10.1 yml配置文件
+
+- 格式：
+  - 数值前边必须有空格，作为分隔符
+  - 使用缩进表示层级关系，缩进时，不允许使用Tab键，只能用空格（idea中会自动将Tab转换为空格）
+  - 缩进的空格数目不重要，只要相同层级的元素左侧对齐即可
+  - \# 表示注释，从这个字符一直到行尾，都会被解析器忽略
+
+![image-20250424201500383](javaweb.assets/image-20250424201500383.png)
+
+
+
+- 定义对象/Map集合
+
+![image-20250424201725110](javaweb.assets/image-20250424201725110.png)
+
+- 定义数组/List/Set集合
+
+![image-20250424201816221](javaweb.assets/image-20250424201816221.png)
+
+==**注意**==：
+
+- **在yml格式的配置文件中，如果配置项的值是以 0 开头的，值需要使用 ' ' 单引号阔起来，因为以0开头在yml中表示8进制的数据。**
+
+![image-20250424202909189](javaweb.assets/image-20250424202909189.png)
+
+
+
+## 11、项目准备工作
+
+### 11.1 开发规范
+
+- 开发模式：
+
+![image-20250424212529575](javaweb.assets/image-20250424212529575.png)
+
+根据页面原型和需要进行分析和设计处接口文档
+
+
+
+- 开发规范：Restful规范
+  - RESR（==RE==presentational ==S==tate ==T==ransfer），**表述性**状态转换，是一种软件架构风格。
+
+![image-20250424213302957](javaweb.assets/image-20250424213302957.png)
+
+**注意**：
+
+- REST是风格，是约定方式，约定不是规定，可以打破。
+- 描述功能模块通常使用复数形式（**加s**），表示**此类资源，而非单个资源**。如：users、books...
+
+
+
+### 11.2 工程搭建
+
+1. 建SpringBoot工程，并引l入web开发起步依赖、mybatis、mysql驱动、lombok。**查看project structure中的sdk和panguage level版本，editor中的file encoding中global encoding、project encoding和default encoding for properties files都调整为utf-8，maven仓库地址是否正确**。
+2. 创建数据库表dept，并在application.yml中配置数据库的基本信息。
+3. 准备基础代码结构，并引l入实体类Dept及统一的**响应结果封装类Result**。
+
+![image-20250424214349837](javaweb.assets/image-20250424214349837.png)
 
 
 
