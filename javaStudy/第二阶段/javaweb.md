@@ -778,6 +778,118 @@ java和resources目录下的文件会统一编译到classes字节码文件下，
 
 
 
+## 12、前后端联桥
+
+![image-20250425184431361](javaweb.assets/image-20250425184431361.png)
+
+![image-20250425184938011](javaweb.assets/image-20250425184938011.png)
+
+
+
+## 13、部门管理
+
+### 13.1 列表查询
+
+![image-20250425171542833](javaweb.assets/image-20250425171542833.png)
+
+​		由于java中实体属性是驼峰命名规则，而sql中的命名规则是加下划线 ‘_’ ，因此需要进行加工才能使得相关属性的值传输成功。	
+
+
+
+### 13.2 406 问题解决方案
+
+#### 13.2.1 方法一 -- 删除插件
+
+![image-20250425170027934](javaweb.assets/image-20250425170027934.png)
+
+#### 13.2.2 方法二 -- 指定版本
+
+![image-20250425170203847](javaweb.assets/image-20250425170203847.png)
+
+
+
+### 13.3 删除部门
+
+- 方式一：通过原始的==HttpServletRequest==对象获取
+
+  ~~~java
+  String xxx = request.getParameter("xxx");
+  ~~~
+
+- 方式二：通过==@RequestParam==注解进行参数绑定
+
+  ~~~java
+  public Result del(@RequestParam("id")Integer deptId){}
+  ~~~
+
+  ![image-20250425190711378](javaweb.assets/image-20250425190711378.png)
+
+  当使用注解的时候，再@RequestParam注解中有参数required默认为true，意思是必须有参数传递，不然会报错，如果不传递参数也请求成功的话，可以将requied设置为false。
+
+- 方式三：**保证请求参数名与形参变量名相同，直接接收（推荐）**
+
+  ~~~java
+  // http://localhost:8080/depts?id=1
+  public Result del(Integer id){}
+  ~~~
+
+![image-20250425210106565](javaweb.assets/image-20250425210106565.png)
+
+
+
+### 13.4 新增部门
+
+![image-20250425205644676](javaweb.assets/image-20250425205644676.png)
+
+@RequestBody 形参里面的属性必须有与post请求体中相同名字的键名。
+
+
+
+### 13.5 修改部门
+
+@PathVariable
+
+- 查询回显
+
+  ![image-20250425212719033](javaweb.assets/image-20250425212719033.png)
+
+  ![image-20250425212734994](javaweb.assets/image-20250425212734994.png)
+
+
+
+- 修改数据
+
+  ![image-20250425213502473](javaweb.assets/image-20250425213502473.png)
+
+## 14、日志技术
+
+![image-20250425215234278](javaweb.assets/image-20250425215234278.png)
+
+- JUL：这是JaVaSE平台提供的官方日志框架，也被称为JUL。配置相对简单，但不够灵活，性能较差。
+- Log4j：一个流行的日志框架，提供了灵活的配置选项，支持多种输出目标。
+- Logback：基于Log4j升级而来，提供了更多的功能和配置选项，性能优于Log4j。
+- Slf4j（Simple Logging Facade for Java）：简单日志门面，提供了一套日志操作的标准接口及抽象类，允许应用程序使用不同的底层日志框架。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
