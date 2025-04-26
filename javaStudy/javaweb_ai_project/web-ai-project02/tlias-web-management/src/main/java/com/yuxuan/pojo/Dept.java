@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 /**
  * @ClassName Dept
- * @Description TODO
+ * @Description 部门表
  * @Author eeekuu
  * @Date 2025/4/25 15:21
  */

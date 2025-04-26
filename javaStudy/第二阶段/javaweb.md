@@ -872,6 +872,135 @@ java和resources目录下的文件会统一编译到classes字节码文件下，
 
 
 
+### 14.1 logback.xml
+
+~~~xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 控制台输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d 表示日期，%thread 表示线程名，%-5level表示级别从左显示5个字符宽度，%logger显示日志记录器的名称， %msg表示日志消息，%n表示换行符 -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+ 
+    <!-- 系统文件输出 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 日志文件输出的绝对路径和文件名, %i表示序号 -->
+            <FileNamePattern>D:/tlias-%d{yyyy-MM-dd}-%i.log</FileNamePattern>
+            <!-- 最多保留的历史日志文件数量 -->
+            <MaxHistory>30</MaxHistory>
+            <!-- 最大文件大小，超过这个大小会触发滚动到新文件，默认为 10MB -->
+            <maxFileSize>10MB</maxFileSize>
+        </rollingPolicy>
+ 
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d 表示日期，%thread 表示线程名，%-5level表示级别从左显示5个字符宽度，%msg表示日志消息，%n表示换行符 -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+ 
+    <!-- 日志输出级别 -->
+    <!-- all：开启  off：关闭 -- 这里也可以设置日志级别，级别由低到高：trance < debug < info < warn < error -->
+    <root level="ALL"> 
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>
+~~~
+
+
+
+### 14.2 logger声明
+
+用sl4j库中的，面向接口编程
+
+```java
+private static final Logger logger = LoggerFactory.getLogger(LogTest.class);
+```
+
+
+
+### 14.3 日志级别
+
+- 指的是日志信息的类型，日志会分级别，常见的日志级别如下（**级别由低到高**）：
+
+![image-20250426153922659](javaweb.assets/image-20250426153922659.png)
+
+![image-20250426154124258](javaweb.assets/image-20250426154124258.png)
+
+
+
+![image-20250426154916674](javaweb.assets/image-20250426154916674.png)
+
+
+
+- **常用日志和使用场景**：
+
+  - **debug**：记录程序的调试信息
+
+  - **info**：记录正常系统运行日志，重要信息
+
+  - **error**：记录错误异常信息
+
+
+
+## 15、多表关系
+
+### 15.1 外键约束 -- 物理外键 foreign key
+
+使用 foreign key 定义外键关联另一张表。
+
+![image-20250426155659987](javaweb.assets/image-20250426155659987.png)
+
+**作用**：
+
+- 多表操作中保证数据的**一致性、完整性和正确性**
+
+**缺点**：
+
+- 影响增、删、改的效率（需要检查外键关系）。
+- 仅用于单节点数据库，不适用与分布式、集群场景。
+- 容易引发数据库的死锁问题，消耗性能。
+
+
+
+**逻辑外键**：
+
+- 概念：**在==业务层逻辑==中，解决外键关联。**
+- 通过逻辑外键，可以很方便的解决上述问题。
+
+
+
+## 16、员工管理
+
+#### 16.1 分页查询
+
+##### 16.1.1 原始方法
+
+@RequestParam(defaultValue = "")
+
+![image-20250426211227774](javaweb.assets/image-20250426211227774.png)
+
+##### 16.1.2 借助PageHelper进行分页查询
+
+- PageHelper是第三方提供的在Mybatis框架中用来实现分页的插件，用来**简化分页操作**，**提高开发效率**。
+
+![image-20250426213724100](javaweb.assets/image-20250426213724100.png)
+
+- **使用步骤**
+  1. 引入PageHelper的依赖
+  2. 定义Mapper接口的查询方法**（无需考虑分页）**
+  3. 在Service方法中实现分页查询
+
+<img src="javaweb.assets/image-20250426213907867.png" alt="image-20250426213907867" style="zoom:70%;" />
+
+
+
+
+
 
 
 

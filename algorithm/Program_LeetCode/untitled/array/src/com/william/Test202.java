@@ -9,7 +9,7 @@ import java.util.Set;
  * @Author eeekuu
  * @Date 2025/4/26 15:00
  */
-public class test202 {
+public class Test202 {
     public boolean isHappy(int n) {
         Set<Integer> record = new HashSet<>();
 
