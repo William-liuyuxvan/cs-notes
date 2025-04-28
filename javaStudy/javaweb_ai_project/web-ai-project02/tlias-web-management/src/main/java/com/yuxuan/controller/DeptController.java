@@ -1,5 +1,6 @@
 package com.yuxuan.controller;
 
+import com.yuxuan.exception.NotNullException;
 import com.yuxuan.pojo.Dept;
 import com.yuxuan.pojo.Result;
 import com.yuxuan.service.DeptService;
@@ -47,7 +48,7 @@ public class DeptController {
 
     // 方法三
     @DeleteMapping
-    public Result deleteById(Integer id) {
+    public Result deleteById(Integer id) throws NotNullException {
         System.out.println("删除部分id：" + id);
         deptService.deleteById(id);
         return Result.success();

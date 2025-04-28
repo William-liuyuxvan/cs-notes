@@ -1,10 +1,13 @@
 package com.yuxuan.service.impl;
 
+import com.yuxuan.exception.NotNullException;
 import com.yuxuan.mapper.DeptMapper;
+import com.yuxuan.mapper.EmpMapper;
 import com.yuxuan.pojo.Dept;
 import com.yuxuan.service.DeptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,13 +24,23 @@ public class DeptServiceImpl implements DeptService {
     @Autowired
     private DeptMapper deptMapper;
 
+    @Autowired
+    private EmpMapper empMapper;
+
     @Override
     public List<Dept> findAll() {
         return deptMapper.findAll();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteById(int id) {
+    public void deleteById(int id) throws NotNullException {
+        // 1. 检查是否有员工关联
+        if (empMapper.findByDeptId(id) > 0) {
+            throw new NotNullException("对不起，当前部门下有员工，不能直接删除！");
+        }
+
+        // 2. 调用mapper
         deptMapper.deleteById(id);
     }
 

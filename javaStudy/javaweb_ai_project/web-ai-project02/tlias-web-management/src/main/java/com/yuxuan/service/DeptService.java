@@ -1,5 +1,6 @@
 package com.yuxuan.service;
 
+import com.yuxuan.exception.NotNullException;
 import com.yuxuan.pojo.Dept;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface DeptService {
     /**
      * 根据id删除数据
      */
-    void deleteById(int id);
+    void deleteById(int id) throws NotNullException;
 
     /**
      * 新增部门

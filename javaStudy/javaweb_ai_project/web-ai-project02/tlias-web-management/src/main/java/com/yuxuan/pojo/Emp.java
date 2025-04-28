@@ -30,4 +30,7 @@ public class Emp {
 
     // 封装部门名称 -- 根据接口文档编程
     private String deptName;
+
+    // 封装员工工作经历
+    private List<EmpExpr> exprList;
 }

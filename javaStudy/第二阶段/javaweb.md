@@ -824,7 +824,7 @@ java和resources目录下的文件会统一编译到classes字节码文件下，
 
   ![image-20250425190711378](javaweb.assets/image-20250425190711378.png)
 
-  当使用注解的时候，再@RequestParam注解中有参数required默认为true，意思是必须有参数传递，不然会报错，如果不传递参数也请求成功的话，可以将requied设置为false。
+  当使用注解的时候，再@RequestParam注解中有参数required默认为true，意思是必须有参数传递，不然会报错。如果想要不传递参数也请求成功的话，可以将requied设置为false。
 
 - 方式三：**保证请求参数名与形参变量名相同，直接接收（推荐）**
 
@@ -999,45 +999,152 @@ private static final Logger logger = LoggerFactory.getLogger(LogTest.class);
 
 
 
+##### 16.1.3 MyBatis中动态SQL查询
+
+- \<if>标签：条件判断，如果条件成立，则拼接对应的sql片段N
+- \<where>标签：根据查询条件，来生成where关键字，并会自动去除条件前面
+  多余的and或or。
 
 
 
+#### 16.2  新增员工
 
 
 
+- 批量添加员工信息 - \<foreach>
+
+![image-20250427125654625](javaweb.assets/image-20250427125654625.png)
 
 
 
+## 17、事务管理
+
+- 事务是一组操作的集合，是一个不可分割的工作单位。这组操作要么全部成功，要么全部失败。
+
+控制事务：
+
+- 开启事务：start transaction/begin
+- 提交事务：commit
+- 回滚事务：rollback
+
+场景：
+
+- 银行转账
+  - 下单扣减库存
 
 
 
+#### 17.1 spring事务管理 - 控制事务
+
+- 注解：@Transactional  ==默认出现RuntimeException 才会回滚==
+- 作用：将当前方法交给spring进行事务管理，方法执行前，开启事务；成功执行完毕，提交事务；出现异常，回滚事务
+- 位置：业务（service）层的方法上、类上、接口上，**推荐添加到方法上**
+
+![image-20250427150216691](javaweb.assets/image-20250427150216691.png)
+
+- 配置管理日志级别
+
+  ~~~yml
+  # 配置事务管理日志级别
+  logging:
+    level:
+      org.springframework.jdbc.support.JdbcTransactionManager: debug
+  ~~~
+
+- 在@Transaction中的属性：
+
+  - rollbackFor = {Exception.class}  指定什么异常会进行回滚
+  - propagation 事务的传播行为 
+
+  ![image-20250427151645866](javaweb.assets/image-20250427151645866.png)
+
+- 事务的四大特性（ACID）：原子性、一致性、隔离性、持久性
+
+  ![image-20250427152551023](javaweb.assets/image-20250427152551023.png)
 
 
 
+## 18、文件上传
+
+- 前端和后端代码示例：
+
+![image-20250427153122444](javaweb.assets/image-20250427153122444.png)
+
+- 如果将前端的 `enctype="multipart/form-data"`删除，那么则只能上传文件名，而不能上传文件中的内容
+- 上传的文件内容是二进制数据。
+
+![image-20250427155152008](javaweb.assets/image-20250427155152008.png)
+
+- multipartFile.getOriginalFilename()：获取原始文件名
+- multipartFile.transferTo(File dest)：将文件转存到磁盘文件
 
 
 
+- 在spring中的默认单个文件最大为1m，所有文件和表单数据最大为10m，因此我们可以在配置文件中进行更改设置
+
+  ~~~yml
+  spring:
+    servlet:
+      multipart:
+        # 最大单个文件大小
+        max-file-size: 10MB
+        # 最大请求大小（包括所有文件和表单数据）
+        max-request-size: 100MB
+  ~~~
 
 
 
+- 灵活配置参数：然后利用springboot包下的@Value来指定参数
+
+![image-20250427173750320](javaweb.assets/image-20250427173750320.png)
 
 
 
+- 通过@ConfigurationProperties来注入到实体类中
+
+![image-20250427173951926](javaweb.assets/image-20250427173951926.png)
 
 
 
+- 使用建议：
+  - 如果配置属性少，就用@Value
+  - 如果配置属性多，就用@ConfigurationProperties
 
 
 
+## 19、全局异常处理器
+
+@RestControllerAdvice = @ControllerAdvice + @ResponseBody
+
+```java
+@Slf4j
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler
+    public Result handlerException(Exception e) {
+        log.error("程序出错了：", e);
+        return Result.error("出错啦，请联系管理员~    ");
+    }
+
+    public Result handlerDuplicateKeyException(DuplicateKeyException e) {
+        log.error("程序出错了：", e);
+        String message = e.getMessage();
+        int i = message.indexOf("Duplicate entry");
+        String errMsg = message.substring(i);
+        String[] arr = errMsg.split(" ");
+        return Result.error(arr[2] + " 已存在");
+    }
+}
+```
 
 
 
+## 20、员工数据统计
 
+- 职位统计
 
-
-
-
-
+![image-20250428112744849](javaweb.assets/image-20250428112744849.png)
 
 
 
