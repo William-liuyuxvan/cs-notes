@@ -1148,9 +1148,335 @@ public class GlobalExceptionHandler {
 
 
 
+## 21、登录认证
+
+### 21.1 会话技术
+
+- 会话：打开浏览器，访问web服务器的资源，会话建立，直到有一方断开连接，会话结束。在一次会话中可以包含多次请求和响应。
+- 会话跟踪：一种维护浏览器状态的方法，服务器需要识别多次请求是否来自于同一浏览器，以便在同一次会话的多次请求间共享数据。
+- 会话跟踪方案：
+  - 客户端会话跟踪技术：Cookie
+  - 服务端会话跟踪技术：Session
+  - 令牌技术
+
+![image-20250428235025155](javaweb.assets/image-20250428235025155.png)
 
 
 
+#### 21.1.1 Cookie
+
+存放在浏览器中
+
+![image-20250429165251546](javaweb.assets/image-20250429165251546.png)
+
+- 优点：HTTP协议中支持的技术
+
+- 缺点：
+  - 移动端APP无法使用Cookie
+  - 不安全，用户可以自己禁用Cookie
+  - Cookie不能跨域
+
+![image-20250429165421674](javaweb.assets/image-20250429165421674.png)
+
+~~~java
+@Slf4j
+@RestController
+public class CookieController {
+
+    //设置Cookie
+    @GetMapping("/c1")
+    public Result cookie1(HttpServletResponse response){
+        response.addCookie(new Cookie("login_username","itheima")); //设置Cookie/响应Cookie
+        return Result.success();
+    }
+        
+    //获取Cookie
+    @GetMapping("/c2")
+    public Result cookie2(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("login_username")){
+                System.out.println("login_username: "+cookie.getValue()); //输出name为login_username的cookie
+            }
+        }
+        return Result.success();
+    }
+}    
+~~~
+
+
+
+
+
+#### 21.1.2 Session
+
+存放在服务器中 - 安全，底层是Cookie
+
+![image-20250429165552369](javaweb.assets/image-20250429165552369.png)
+
+- 优点：存储在服务端，安全
+- 缺点：
+  - 服务器集群环境下无法直接使用Session
+  - Cookie中的所有缺点（Session底层实现是Cookie）
+    - 移动端APP无法使用Cookie
+    - 用户可以直接禁用Cookie，不安全
+    - Cookie不能跨域
+
+![image-20250429165755677](javaweb.assets/image-20250429165755677.png)
+
+~~~java
+@Slf4j
+@RestController
+public class SessionController {
+
+    @GetMapping("/s1")
+    public Result session1(HttpSession session){
+        log.info("HttpSession-s1: {}", session.hashCode());
+
+        session.setAttribute("loginUser", "tom"); //往session中存储数据
+        return Result.success();
+    }
+
+    @GetMapping("/s2")
+    public Result session2(HttpServletRequest request){
+        HttpSession session = request.getSession();
+        log.info("HttpSession-s2: {}", session.hashCode());
+
+        Object loginUser = session.getAttribute("loginUser"); //从session中获取数据
+        log.info("loginUser: {}", loginUser);
+        return Result.success(loginUser);
+    }
+}
+~~~
+
+
+
+#### 21.1.3 令牌 - 主流方案
+
+![image-20250429170124592](javaweb.assets/image-20250429170124592.png)
+
+- **优点**：
+
+  - 支持PC端、移动端、小程序端
+
+  - 解决集群环境下的认证问题
+
+  - **减轻服务器端存储压力**
+
+- 缺点：需要自己实现
+
+
+
+### 21.2 JWT令牌
+
+- 全称：JSON Web Token(https://jwt.io/)
+- 定义了一种简洁的、自包含的格式，用于在通信双方以json数据格式安全的传输信息。
+- 组成：
+  - 第一部分：Header（头），记录令牌类型、签名算法等。例如：{"alg":"HS256"，"type":"JWT"}
+  - 第二部分：Payload（有效载荷），携带一些自定义信息、默认信息等。例如：{"id":"1"，"username":"Tom"}
+  - 第三部分：Signature（签名），防止Token被篡改、确保安全性。将header、payload融入，并加入指定秘钥，通过指定签名算法计算而来。
+
+![image-20250429192723260](javaweb.assets/image-20250429192723260.png)
+
+Base64：一种基于64个可打印字符（A-Z a-Z 0-9 + /）来表示二进制数据的编码方式。
+
+
+
+生成和校验：Jwts.builder()...  Jwts.parser()...
+
+
+
+**报错情况**：JWT令牌被篡改 或者 过期失效了。
+
+**注意**：
+
+- JWT校验时使用的签名密钥，必须和生成JWT令牌时使用的密钥是配套的。
+
+
+
+```Java
+package com.itheima.util;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+
+import java.util.Date;
+import java.util.Map;
+
+public class JwtUtils {
+
+    private static String signKey = "SVRIRUlNQQ==";
+    private static Long expire = 43200000L;
+
+    /**
+     * 生成JWT令牌
+     * @return
+     */
+    public static String generateJwt(Map<String,Object> claims){
+        String jwt = Jwts.builder()
+                .addClaims(claims)
+                .signWith(SignatureAlgorithm.HS256, signKey)
+                .setExpiration(new Date(System.currentTimeMillis() + expire))
+                .compact();
+        return jwt;
+    }
+
+    /**
+     * 解析JWT令牌
+     * @param jwt JWT令牌
+     * @return JWT第二部分负载 payload 中存储的内容
+     */
+    public static Claims parseJWT(String jwt){
+        Claims claims = Jwts.parser()
+                .setSigningKey(signKey)
+                .parseClaimsJws(jwt)
+                .getBody();
+        return claims;
+    }
+}
+```
+
+
+
+### 21.3 Filter 过滤器
+
+#### 21.3.1 Filter 介绍
+
+- 概念：**Filter过滤器**，是JavaWeb三大组件(Servlet、Filter、Listener)之一。
+- 过滤器可以把对资源的请求**拦截**下来，从而实现一些特殊的功能。
+- 过滤器一般完成一些**通用**的操作，比如：**登录校验、统一编码处理、敏感字符处理**等。
+
+![image-20250429193252298](javaweb.assets/image-20250429193252298.png)
+
+
+
+**使用步骤**：
+
+- 定义：定义一个类实现Filter接口（init、doFilter、destroy）
+- 配置：
+  - Filter类上加**@WebFilter(urlPatterns="/+")**，配置拦截路径。
+  - 引导类上加**@ServletComponentScan**，开启Servlet组件支持。
+
+```Java
+@ServletComponentScan // 开启对Servlet组件的支持
+@SpringBootApplication
+public class TliasManagementApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(TliasManagementApplication.class, args);
+    }
+}
+```
+
+```Java
+@WebFilter(urlPatterns = "/*") // 配置过滤器要拦截的请求路径（ /* 表示拦截浏览器的所有请求 ）
+public class DemoFilter implements Filter {
+    // 初始化方法, web服务器启动, 创建Filter实例时调用, 只调用一次
+    public void init(FilterConfig filterConfig) throws ServletException {
+        System.out.println("init ...");
+    }
+
+    // 拦截到请求时,调用该方法,可以调用多次
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
+        System.out.println("拦截到了请求...");
+    }
+
+    // 销毁方法, web服务器关闭时调用, 只调用一次
+    public void destroy() {
+        System.out.println("destroy ... ");
+    }
+}
+```
+
+
+
+==注意==：
+
+- 在过滤器Filter中，如果不执行放行操作，将无法访问后面的资源。
+-  放行操作：`chain.doFilter(request, response);`
+
+
+
+![image-20250429195927290](javaweb.assets/image-20250429195927290.png)
+
+
+
+#### 21.3.2 Filter 过滤器链
+
+- 一个web应用中，配置了多个过滤器，就形成了**过滤器链**。
+- ==顺序==：注解配置的Filter，优先级是**按照过滤器类名（字符串）的自然排序**。
+
+![image-20250429202135232](javaweb.assets/image-20250429202135232.png)
+
+
+
+### 21.4 Interceptor 拦截器
+
+#### 21.4.1 Interceptor 介绍
+
+- 概念：是一种动态拦截方法调用的机制，类似于过滤器。Spring框架中提供的，主要用来动态拦截控制器方法的执行。
+- 作用：拦截请求，在指定的方法调用前后，根据业务需要执行预先设定的代码。
+
+![image-20250429202731714](javaweb.assets/image-20250429202731714.png)
+
+
+
+使用步骤：
+
+1. 定义拦截器，实现HandlerInterceptor接口，并实现其所有方法。
+   1. preHandle
+   2. postHandle
+   3. afterCompletion
+2. 注册拦截器：定义一个配置类实现WebMvcConfigurer接口，注册拦截器（/**）
+
+```Java
+//自定义拦截器
+@Component
+public class DemoInterceptor implements HandlerInterceptor {
+    //目标资源方法执行前执行。 返回true：放行    返回false：不放行
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        System.out.println("preHandle .... ");
+        
+        return true; //true表示放行
+    }
+
+    //目标资源方法执行后执行
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        System.out.println("postHandle ... ");
+    }
+
+    //视图渲染完毕后执行，最后执行
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        System.out.println("afterCompletion .... ");
+    }
+}
+```
+
+```Java
+@Configuration  
+public class WebConfig implements WebMvcConfigurer {
+
+    //自定义的拦截器对象
+    @Autowired
+    private DemoInterceptor demoInterceptor;
+
+    
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+       //注册自定义拦截器对象
+        registry.addInterceptor(demoInterceptor).addPathPatterns("/**");//设置拦截器拦截的请求路径（ /** 表示拦截所有请求）
+    }
+}
+```
+
+
+
+
+
+21.4.2 Interceptor 介绍
 
 
 

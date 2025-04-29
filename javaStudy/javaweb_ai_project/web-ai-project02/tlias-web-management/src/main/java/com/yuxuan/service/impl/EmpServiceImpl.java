@@ -4,11 +4,9 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yuxuan.mapper.EmpExprMapper;
 import com.yuxuan.mapper.EmpMapper;
-import com.yuxuan.pojo.Emp;
-import com.yuxuan.pojo.EmpExpr;
-import com.yuxuan.pojo.EmpQueryParam;
-import com.yuxuan.pojo.PageResult;
+import com.yuxuan.pojo.*;
 import com.yuxuan.service.EmpService;
+import com.yuxuan.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +14,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @ClassName EmpServiceImpl
@@ -121,6 +117,25 @@ public class EmpServiceImpl implements EmpService {
     @Override
     public List<Emp> listAllEmp() {
         return empMapper.listAllEmp();
+    }
+
+    @Override
+    public LoginInfo login(Emp emp) {
+        // 1. 查询数据
+        Emp user = empMapper.seleteUsernameAndPassword(emp);
+
+        // 2. 判断是否正确
+        if (user != null) {
+            Map<String, Object> dataMap = new HashMap<>();
+            dataMap.put("id", user.getId());
+            dataMap.put("username", user.getUsername());
+
+            String jwt = JwtUtils.generateJwt(dataMap);
+
+            return new LoginInfo(user.getId(), user.getUsername(), user.getName(), jwt);
+        }
+
+        return null;
     }
 
 

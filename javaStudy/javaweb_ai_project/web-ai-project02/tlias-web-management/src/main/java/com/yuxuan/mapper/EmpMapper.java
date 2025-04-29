@@ -60,4 +60,7 @@ public interface EmpMapper {
 
     @Select("select count(*) from emp where dept_id = #{id}")
     Integer findByDeptId(int id);
+
+    @Select("select * from emp where username = #{username} and password = #{password}")
+    Emp seleteUsernameAndPassword(Emp emp);
 }

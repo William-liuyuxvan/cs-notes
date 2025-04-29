@@ -2,6 +2,7 @@ package com.yuxuan.service;
 
 import com.yuxuan.pojo.Emp;
 import com.yuxuan.pojo.EmpQueryParam;
+import com.yuxuan.pojo.LoginInfo;
 import com.yuxuan.pojo.PageResult;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
@@ -43,4 +44,6 @@ public interface EmpService {
      * 查询所有员工
      */
     List<Emp> listAllEmp();
+
+    LoginInfo login(Emp emp);
 }
