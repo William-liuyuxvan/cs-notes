@@ -1476,7 +1476,412 @@ public class WebConfig implements WebMvcConfigurer {
 
 
 
-21.4.2 Interceptor 介绍
+#### 21.4.2 Interceptor 拦截流程
+
+![image-20250430094617915](javaweb.assets/image-20250430094617915.png)
+
+![image-20250430094634338](javaweb.assets/image-20250430094634338.png)
+
+
+
+**拦截范围**：Filter先拦截到，Interceptor后拦截到
+
+![image-20250430095227636](javaweb.assets/image-20250430095227636.png)
+
+**Filter和Interceptor区别**：
+
+- **接口规范不同**：过滤器需要实现Filter接口，而拦截器需要实现HandlerInterceptor接口。
+- **拦截范围不同**：过滤器Filter会拦截所有的资源，而Interceptor只会拦截Spring环境中的资源。
+
+
+
+## 22、SpringAOP
+
+#### 22.1 介绍
+
+- **AOP**：**A**spect **O**riented **P**rogramming（**面向切面编程**、面向方面编程），可简单理解为就是面向特定方法编程。
+- 场景：案例中部分业务方法运行较慢，定位执行耗时较长的接口，此时需要统计每一个业务方法的执行耗时。
+- 优势：
+  1. 减少重复代码
+  2. 代码无侵入
+  3. 提高开发效率
+  4. 维护方便
+- **提示**：**AOP是一种思想**，而在Spring框架中对这种思想进行的实现，那我们要学习的就是Spring AOP。
+
+
+
+- **实现步骤**：
+
+  1. 引入AOP依赖
+
+     ```XML
+     <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-aop</artifactId>
+     </dependency>
+     ```
+
+  2. 编写AOP程序9（公共逻辑代码）
+
+     ```Java
+     @Component
+     @Aspect //当前类为切面类
+     @Slf4j
+     public class RecordTimeAspect {
+     
+         @Around("execution(* com.itheima.service.impl.DeptServiceImpl.*(..))")
+         public Object recordTime(ProceedingJoinPoint pjp) throws Throwable {
+             //记录方法执行开始时间
+             long begin = System.currentTimeMillis();
+     
+             //执行原始方法
+             Object result = pjp.proceed();
+     
+             //记录方法执行结束时间
+             long end = System.currentTimeMillis();
+     
+             //计算方法执行耗时
+             log.info("方法执行耗时: {}毫秒",end-begin);
+             return result;
+         }
+     }
+     ```
+
+
+
+**常见的应用场景**如下：
+
+- 记录系统的操作日志
+- 权限控制
+- 事务管理：我们前面所讲解的Spring事务管理，底层其实也是通过AOP来实现的，只要添加@Transactional注解之后，AOP程序自动会在原始方法运行前先来开启事务，在原始方法运行完毕之后提交或回滚事务
+
+
+
+#### 22.2 核心概念
+
+- 连接点：JoinPoint，可以被AOP控制的方法（暗含方法执行时的相关信息）
+- 通知：Advice，指那些重复的逻辑，也就是共性功能（最终体现为一个方法）
+- 切入点：PointCut，匹配连接点的条件，通知仅会在切入点方法执行时被应用
+- 切面：Aspect，描述通知与切入点的对应关系（通知+切入点）
+- 目标对象：Target，通知所应用的对象
+
+![image-20250430105014802](javaweb.assets/image-20250430105014802.png)
+
+
+
+#### 22.3 Spring 动态代理
+
+![image-20250430105146406](javaweb.assets/image-20250430105146406.png)
+
+sping中提供了动态代理技术，在ioc容器中的方法调用的时候，会引用代理对象中的对应方法，而该代理对象实现的接口与目标对象的接口一致，并且在代理对象中的方法中首先实现了切面中的调用目标对象相应方法之前的语句，然后再实现目标对象目标方法中的语句，然后再实现了通知中的目标方法运行后应该运行的语句。
+
+
+
+#### 22.4 通知类型
+
+
+
+- @Before（前置通知）
+- @After（后置通知）
+- @Around（环绕通知，==重点==）
+- @AfterReturning（返回后通知）
+- @AfterThrowing（异常后通知）
+
+
+
+**@PointCut**：抽取公共的切点表达式，提高复用性
+
+```Java
+@Slf4j
+@Component
+@Aspect
+public class MyAspect1 {
+
+    //切入点方法（公共的切入点表达式）
+    @Pointcut("execution(* com.itheima.service.*.*(..))")
+    private void pt(){}
+
+    //前置通知（引用切入点）
+    @Before("pt()")
+    public void before(JoinPoint joinPoint){
+        log.info("before ...");
+
+    }
+
+    //环绕通知
+    @Around("pt()")
+    public Object around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        log.info("around before ...");
+
+        //调用目标对象的原始方法执行
+        Object result = proceedingJoinPoint.proceed();
+        //原始方法在执行时：发生异常
+        //后续代码不在执行
+
+        log.info("around after ...");
+        return result;
+    }
+
+    //后置通知
+    @After("pt()")
+    public void after(JoinPoint joinPoint){
+        log.info("after ...");
+    }
+
+    //返回后通知（程序在正常执行的情况下，会执行的后置通知）
+    @AfterReturning("pt()")
+    public void afterReturning(JoinPoint joinPoint){
+        log.info("afterReturning ...");
+    }
+
+    //异常通知（程序在出现异常的情况下，执行的后置通知）
+    @AfterThrowing("pt()")
+    public void afterThrowing(JoinPoint joinPoint){
+        log.info("afterThrowing ...");
+    }
+}
+```
+
+
+
+#### 22.5 通知顺序
+
+- 当有多个切面的切入点都匹配到了目标方法，目标方法运行时，多个通知方法都会被执行。
+
+- 执行顺序：
+  - 不同切面类中，默认按照切面类的**类名字母排序**：
+    - 目标方法前的通知方法：字母排名靠前的先执行
+    - 目标方法后的通知方法：字母排名靠前的后执行
+  - 用**@Order（数字）**加在切面类上来控制顺序
+    - 目标方法前的通知方法：数字小的先执行
+    - 目标方法后的通知方法：数字小的后执行
+
+
+
+#### 22.6 切入点表达式
+
+##### 22.6.1 execution
+
+~~~java
+@Before("execution(public void com.itheima.service.impl.DeptServiceImpl.delete(java.lang.Integer))")
+public void before(JoinPoint joinPoint) {
+~~~
+
+- execution主要根据方法的返回值、包名、类名、方法名、方法参数等信息来匹配，语法为
+
+  ~~~
+  execution（访问修饰符? 返回值 包名.类名.?方法名（方法参数） throws异常?）
+  ~~~
+
+- 其中带？的表示可以省略的部分
+  1. **访问修饰符**：可省略（比如：public、protected）
+  2. **包名.类名**：可省略
+  3. **throws异常**：可省略（注意是方法上声明抛出的异常，不是实际抛出的异常）
+
+- 可以使用通配符描述切入点
+
+  1. ＊：单个独立的任意符号，可以通配任意返回值、包名、类名、方法名、任意类型的一个参数，也可以通配包、类、方法名的一部分
+
+     ~~~
+     execution(* com.*.service.*.update*(*))
+     ~~~
+
+     
+
+  2.  . . ：多个连续的任意符号，可以通配任意层级的包，或任意类型、任意个数的参数
+
+     ~~~
+     execution(* com.itheima..DeptService.*(..))
+     ~~~
+
+     
+
+**注意**：根据业务需要，可以使用且（&&）、或（II）、非（！）来组合比较复杂的切入点表达式。
+
+
+
+==书写建议==：
+
+1. 有业务**方法名**在**命名**时尽量**规范**，方便切入点表达式快速匹配。如：findXxx，updateXxx。
+2. 描述切入点方法通常**基于接口描述**，而不是直接描述实现类，**增强拓展性**。
+3. 满足业务需要的前提下，**尽量缩小切入点的匹配范围**。如：包名尽量不使用 . . ，使用＊匹配单个包。
+
+
+
+##### 22.6.2 @annotation
+
+- @annotation切入点表达式，用于匹配标识有特定注解的方法。
+
+
+
+1. **自定义注解**：
+
+   ~~~java
+   package com.itheima.anno;
+   
+   @Target(ElementType.METHOD)
+   @Retention(RetentionPolicy.RUNTIME)
+   public @interface LogOperation{
+   }
+   ~~~
+
+   只需要完成元注解即可。
+
+   
+
+2. **业务类**：
+
+   ~~~java
+   @Slf4j
+   @Service
+   public class DeptServiceImpl implements DeptService {
+       @Autowired
+       private DeptMapper deptMapper;
+   
+       @Override
+       @LogOperation //自定义注解（表示：当前方法属于目标方法）
+       public List<Dept> list() {
+           List<Dept> deptList = deptMapper.list();
+           //模拟异常
+           //int num = 10/0;
+           return deptList;
+       }
+   
+       @Override
+       @LogOperation //自定义注解（表示：当前方法属于目标方法）
+       public void delete(Integer id) {
+           //1. 删除部门
+           deptMapper.delete(id);
+       }
+   
+   
+       @Override
+       public void save(Dept dept) {
+           dept.setCreateTime(LocalDateTime.now());
+           dept.setUpdateTime(LocalDateTime.now());
+           deptMapper.save(dept);
+       }
+   
+       @Override
+       public Dept getById(Integer id) {
+           return deptMapper.getById(id);
+       }
+   
+       @Override
+       public void update(Dept dept) {
+           dept.setUpdateTime(LocalDateTime.now());
+           deptMapper.update(dept);
+       }
+   }
+   ~~~
+
+   在需要进行切面的方法上进行注解
+
+   
+
+3. **切面类**：
+
+   ```Java
+   @Slf4j
+   @Component
+   @Aspect
+   public class MyAspect6 {
+       //针对list方法、delete方法进行前置通知和后置通知
+   
+       //前置通知
+       @Before("@annotation(com.itheima.anno.LogOperation)")
+       public void before(){
+           log.info("MyAspect6 -> before ...");
+       }
+       
+       //后置通知
+       @After("@annotation(com.itheima.anno.LogOperation)")
+       public void after(){
+           log.info("MyAspect6 -> after ...");
+       }
+   }
+   ```
+
+   在通知上定义@annotation
+
+
+
+#### 22.7 连接点
+
+- 在Spring中用**JoinPoint**抽象了连接点，用它可以获得方法执行时的相关信息，如目标类名、方法名、方法参数等。
+  - 对于@Around通知，获取连接点信息只能使用ProceedingJoinPoint
+  - 对于其它四种通知，获取连接点信息只能使用JoinPoint，它是ProceedingJoinPoint的父类型
+
+![image-20250430150330978](javaweb.assets/image-20250430150330978.png)
+
+![image-20250430150338188](javaweb.assets/image-20250430150338188.png)
+
+
+
+#### 22.8 ThreadLocal
+
+- ==**ThreadLocal**不是一个Thread，而是Thread的局部变量。==
+- T**hreadLocal为每个线程提供一份单独的存储空间**，具有线程隔离的效果，不同的线程之间不会相互干扰。
+
+![image-20250430152959234](javaweb.assets/image-20250430152959234.png)
+
+- ThreadLocal常用方法：
+  - public void set(T value)：设置当前线程的线程局部变量的值
+  - public T get()：返回当前线程所对应的线程局部变量的值
+  - public void remove()：移除当前线程的线程局部变量
+
+
+
+- 一般的在filter中jwt令牌解析后会获取到id参数，将获取的id存放到ThreadLocal中，然后在放行代码后进行删除，这样我们在放行后进入aop中的aroud环绕通知时可以获取到其参数（既操作人），然后进行存放操作数据。
+
+  ![image-20250430161843152](javaweb.assets/image-20250430161843152.png)
+
+
+
+## 23、SpringBoot 原理
+
+### 23.1 配置优先级
+
+- SpringBoot配置优先级**（高  --> 低）**
+  1. 命令行参数（--xxx=xxx，例如 --server.port=10010）
+  2. java系统属性（--Dxxx=xxx，例如 -Dserver.port=9000）
+  3. application.properties
+  4. application.yml
+  5. application.yaml（忽略）
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

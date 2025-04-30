@@ -1,6 +1,8 @@
 package com.yuxuan.filter;
 
+import com.yuxuan.utils.CurrentHolder;
 import com.yuxuan.utils.JwtUtils;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +27,9 @@ public class TokenFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         // 1. 获取路径
-        String url = String.valueOf(request.getRequestURL());
+//        String url = String.valueOf(request.getRequestURL());
+
+        String url = request.getRequestURI();
 
         // 2. 判断是否是登录操作 /login
         if (url.contains("/login")) {
@@ -46,7 +50,10 @@ public class TokenFilter implements Filter {
 
         // 5. 解析token
         try {
-            JwtUtils.parseJWT(token);
+            Claims claims = JwtUtils.parseJWT(token);
+            Integer id = Integer.valueOf(claims.get("id").toString());
+            log.info("token有效, id为{}, 存入当前线程中", id);
+            CurrentHolder.setCurrentId(id);
         } catch (Exception e) {
             log.info("token无效，拦截");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -55,6 +62,9 @@ public class TokenFilter implements Filter {
 
         // 6. token有效，放行
         log.info("token有效，放行");
+
         filterChain.doFilter(servletRequest, servletResponse);
+
+        CurrentHolder.remove();
     }
 }

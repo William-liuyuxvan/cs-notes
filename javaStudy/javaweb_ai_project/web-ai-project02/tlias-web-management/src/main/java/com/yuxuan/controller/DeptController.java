@@ -1,5 +1,6 @@
 package com.yuxuan.controller;
 
+import com.yuxuan.anno.Log;
 import com.yuxuan.exception.NotNullException;
 import com.yuxuan.pojo.Dept;
 import com.yuxuan.pojo.Result;
@@ -47,6 +48,7 @@ public class DeptController {
 //    }
 
     // 方法三
+    @Log
     @DeleteMapping
     public Result deleteById(Integer id) throws NotNullException {
         System.out.println("删除部分id：" + id);
@@ -54,6 +56,7 @@ public class DeptController {
         return Result.success();
     }
 
+    @Log
     @PostMapping
     public Result add(@RequestBody Dept dept) {
         System.out.println("新增部门：" + dept);
@@ -68,6 +71,7 @@ public class DeptController {
         return Result.success(dept);
     }
 
+    @Log
     @PutMapping
     public Result update(@RequestBody Dept dept) {
         System.out.println("修改部门信息：" + dept);
