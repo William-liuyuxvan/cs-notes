@@ -1,5 +1,8 @@
 HELP.md
 **/target/
+**/applicaton.yml
+**/applicaton.properties
+**/applicaton.yaml
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

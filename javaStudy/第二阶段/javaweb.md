@@ -255,7 +255,7 @@ JUnit提供了一些辅助方法，用来帮我们确定被测试的方法是否
 **注意**：
 
 - 在Springboot继承web开发中，声明控制器bean只能用@Controller。
-- 声明bean的注解要想生效，需要被扫描到，启动类默认扫描当钱包及其子包。
+- 声明bean的注解要想生效，需要被扫描到，启动类默认扫描当前包及其子包。
 
 
 
@@ -1851,41 +1851,172 @@ public void before(JoinPoint joinPoint) {
 
 
 
+### 23.2 Bean 作用域
+
+一般使用singleton或prototype，想要获取ioc容器，使用ApplicationContext
+
+~~~java 
+@Autowired
+ApplicationContext applicationContext
+~~~
+
+![image-20250503144303272](javaweb.assets/image-20250503144303272.png)
+
+![image-20250503144314091](javaweb.assets/image-20250503144314091.png)
+
+如果想要延迟IOC容器创建对象，可以在需要延迟创建bean对象的上面添加@Lazy注解，这样会在第一次使用的时候创建。
 
 
 
+不用保存数据的是单例的，需要保存数据的是多例的。
+
+![image-20250503144931586](javaweb.assets/image-20250503144931586.png)
+
+**注意**：实际开发中，绝大部分是单例的，不需要配置scope属性。
 
 
 
+**第三方Bean**：
+
+- 如果要管理的bean对象来自于第三方（不是自定义的），是无法用@ Component及衍生注解声明bean的，就需要用到@Bean注解。
+- 若要管理的第三方bean对象，建议对这些bean进行集中分类配置，可以通过aConfiguration注解声明一个配置类。
+
+![image-20250503145734844](javaweb.assets/image-20250503145734844.png)
+
+**注意**：
+
+- 如果第三方bean需要依赖其它bean对象，直接在bean定义方法中设置形参即可，容器会根据类型自动装配。
+- 通过@Bean注解的name或value属性可以声明bean的名称，如果不指定，默认bean的名称就是方法名。
 
 
 
+### 23.3 起步依赖
+
+依赖传递
 
 
 
+### 23.4 自动配置
+
+#### 23.4.1 方案一
+
+![image-20250503153845360](javaweb.assets/image-20250503153845360.png)
+
+使用繁琐，性能低。
 
 
 
+#### 23.4.2 方案二
+
+![image-20250503154750667](javaweb.assets/image-20250503154750667.png)
+
+方便，优雅。
 
 
 
+#### 23.4.3 源码跟踪
+
+在启动类中有@SpringBootApplication启动注解，里面实现了三个注解 @SpringBootConfiguration（定义配置类）、@EnableAutoConfiguration（实现了@Import注解）、@ComponentScan（主键扫描，扫描当前包及其子包）。在@EnableAutoConfiguration中实现了@Import注解，并且导入了AutoConfigurationImportSelector.class类，该类实现了DeferredImportSelector接口，并且此接口继承了ImportSelector，实现了selectImport方法。导入了.AutoConfiguration.imports文件，该文件中记录了所有需要注入IOC容器的全类名，该类中注解了@Configuration，并且注释了@Bean。
+
+![image-20250503161758323](javaweb.assets/image-20250503161758323.png)
 
 
 
+#### 23.4.4 @Conditional
+
+派生出很多条件注解，根据条件是否满足进行判断是否要注入IOC容器中。
+
+![image-20250503162818453](javaweb.assets/image-20250503162818453.png)
 
 
 
+23.5 自定义starter
+
+- 需求：自定义aliyun-oss-spring-boot-starter，完成阿里云oss操作工具类 AliyunOSSOperator 的自动配置。
+- 目标：引l入起步依赖引l入之后，要想使用阿里云osS，注入AliyunoSSOperator直接使用即可。
+- 步骤：
+  1. 创建aliyun-oss-spring-boot-starter模块
+  2. 创建aliyun-oss-spring-boot-autoconfigure模块，在starter中引l入该模块
+  3. 在aliyun-oss-spring-boot-autoconfigure模块中的定义自动配置功能，并定义自动配置文件 META-INF/spring/xxxx.imports 
 
 
 
+![image-20250503164708469](javaweb.assets/image-20250503164708469.png)
 
 
 
+## 24、Maven 高级
+
+### 24.1 分模块设计
+
+- 将项目按照功能模块/层拆分成若干个子模块
+- 方便项目的管理维护、扩展，也方便模块间的相互引用，资源共享。
+
+**注意**：分模块设计需要先针对模块功能进行设计，再进行编码。不会先将工程开发完毕，然后进行拆分。
 
 
 
+### 24.2 继承
+
+- 概念：**继承**描述的是两个工程间的关系，与java中的继承相似，子工程可以继承父工程中的配置信息，常见于依赖关系的继承。
+- 作用：简化依赖配置、统一管理依赖。
+- 实现：`<parent> ... </parent>`
+
+![image-20250503205650884](javaweb.assets/image-20250503205650884.png)
+
+**步骤**：
+
+1. 创建父工程，**设置打包方式为pom（pom打包方式表示不写任何的代码）**。并继承spring-boot-starter-parent
+2. 在子工程中配置继承关系
+3. 在父工程中配置各个工程的共有依赖
+
+![image-20250503210707730](javaweb.assets/image-20250503210707730.png)
+
+**注意**：
+
+1. 在子工程中，配置了继承关系之后，坐标中的groupId是可以省略的，因为会自动继承父工程的
+2. relativePath指定父工程的pom文件的相对位置（如果不指定，将从本地仓库/远程仓库查找）
+3. 若父子工程都配置了同一个依赖的不同版本，以子工程的为准。
 
 
+
+24.2.1 依赖管理 **\<dependencyManagement>**
+
+- \<dependencies> 是直接依赖，在父工程配置了依赖，子工程会直接继承下来。
+- \<dependencyManagement> 是统一管理依赖版本，不会直接依赖，还需要在子工程中引入所需依赖（无需指定版本）
+
+
+
+### 24.3 聚合
+
+- 聚合：将多个模块组织成一个整体，同时进行项目的构建。
+- 聚合工程：一个不具有业务功能的“空”工程（有且仅有一个pom文件）
+- 作用：快速构建项目(无需根据依赖关系手动构建，直接在聚合工程上构建即可）
+- 实现：maven中可以通过**\<modules>**设置当前聚合工程所包含的子模块名称
+
+![image-20250503212924204](javaweb.assets/image-20250503212924204.png)
+
+**注意**：聚合工程中所包含的模块，在构建时，会自动根据模块间的依赖关系设置构建顺序，与聚合工程中模块的配置书写位置无关。
+
+
+
+### 24.4 继承与聚合的关系
+
+- 联系：继承与聚合都属于设计型模块，打包方式都为pom，常将两种关系制作到同一个pom文件中
+- 区别：
+  1. 继承用于简化依赖配置、统一管理依赖版本，是在子工程中配置继承关系
+  2. 聚合用于快速构建项目，是在父工程（聚合工程）中配置聚合的模块
+
+
+
+### 24.5 私服
+
+- 作用：解决团队内部的资源共享与资源同步问题
+- 查找顺序：本地仓库 -> 私服 -> 中央仓库
+
+
+
+**私服配置教程**：https://heuqqdmbyk.feishu.cn/wiki/BPzFwIajLi8GXyk3JXmcLRYVn5c
 
 
 
