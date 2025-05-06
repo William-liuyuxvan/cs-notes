@@ -2020,5 +2020,269 @@ ApplicationContext applicationContext
 
 
 
+# 25、Linux
+
+- 目录结构和说明
+
+![image-20250506204437870](javaweb.assets/image-20250506204437870.png)
+
+- 在Linux中系统中的路径/itheima与itheima有区别吗？
+  - 有
+  - /itheima是绝对路径，是指根目录／下的itheima目录
+  - ithiema是是相对路径，是指当前目录下的itheima目录
+
+
+
+## 25.1 目录操作命令
+
+### 25.1.1 ls
+
+- 作用：显示指定目录下的内容
+- 语法:ls \[-al] \[dir]
+- 选项：
+  -a：显示所有文件及目录（．开头的隐藏文件也会列出）
+  -L：除文件名称外，同时将文件类型（d表示目录，-表示文件）、权限、拥有者、文件大小等信息详细列出
+- **提示**：ls -l 可以简写为 ll
+
+
+
+### 25.1.2 cd
+
+- 作用：用于切换当前工作目录，即进入指定目录
+- 语法：cd[dirName]
+- 说明：
+   . 表示目前所在的目录
+   .. 表示目前目录位置的上级目录
+   ~ 表示用户的home目录
+- 举例：
+   cd .. 切换到当前目录的上级目录
+   cd ~ 切换到用户的home目录
+   cd /usr/local 切换到/usr/local目录
+   cd - 切换到上一次所在目录
+
+
+
+### 25.1.3 mkdir
+
+- 作用：创建目录
+- 语法：mkdir \[-p] dirName
+- 说明：
+   -p：确保目录名称存在，不存在的就创建一个。通过此选项，可以实现多层目录同时创建
+- 举例：
+   mkdir itcast  在当前目录下，建立一个名为itcast的子目录
+   mkdir -p itcast/test  在itcast目录中创建test子目录，若itcast目录不存在，则建立一个
+
+
+
+### 25.1.4 rm
+
+- 作用：删除文件或者目录
+- 语法：rm \[-rf] name
+- 说明：
+   -r：将目录及目录中所有文件（目录）逐一删除，即递归删除
+   -f：无需确认，直接删除
+- 举例：
+  rm -r itcast/  删除名为itcast的目录和目录中所有文件，删除前需确认
+  rm -rf itcast/  无需确认，直接删除名为itcast的目录和目录中所有文件
+  rm -f hello.txt  无需确认，直接删除hello.txt文件
+
+
+
+## 25.2 文件操作命令
+
+### 25.2.1 cat
+
+- 作用：用于显示文件的所有内容；一次性全部输出，适合小文件，大文件用more指令
+- 语法：cat \[-n] fileName
+- 说明：
+   -n：由1开始对所有输出的行数编号
+- 举例：
+   cat /etc/profile  查看/etc目录下的profile文件内容
+
+
+
+### 25.2.2 more
+
+- 作用：以分页的形式显示文件内容
+- 语法：morefileName
+- 操作说明：
+      回车键：向下滚动一行
+      空格键：向下滚动一屏
+      b：返回上一屏
+      q或ctrl+c：退出more
+- 举例：
+  more /etc/profile  以分页方式显示/etc目录下的profile文件内容
+
+
+
+### 25.2.3 head
+
+- 作用：查看文件开头的内容
+- 语法：headd[-n] fileName
+- 说明：
+  -n：输出文件开头的n行内容
+- 举例：
+  head 1.log  默认显示1.log文件开头的10行内容
+  head -20 1.log  显示1.log艾件开头的20行内容
+
+
+
+### 25.2.4 tail
+
+- 作用：查看文件末尾的内容
+- 语法：tail[-nf]fileName
+- 说明：
+   -n：输出文件末尾的n行内容
+   -f：动态读取文件末尾内容并显示，通常用于日志文件的内容输出
+- 举例：
+  tail 1.log  默认显示1.log文件末尾10行的内容
+  tail -20 1.log  显示1.log文件末尾20行的内容
+  tail -f 1.log  动态读取1.Log文件末尾内容并显示（实时刷新）
+
+
+
+## 25.3 拷贝移动命令
+
+### 25.3.1 cp
+
+- 作用：用于复制文件或目录
+- 语法：cp \[-r] source dest
+- 选项：
+  -r：如果复制的是目录需要使用此选项，此时将复制该目录下所有的子目录和文件
+- 举例：
+  cp hello.txt itcast/   将hello.txt复制到itcast目录中
+  cp hello.txt ./hi.txt   将hello.txt复制到当前目录，并改名为hi.txt
+  cp -r itcast/ ./itheima/   将itcast目录和目录下所有文件复制到itheima目录下
+  cp -r itcast/* ./itheima/   将itcast目录下所有文件复制到itheima目录下
+
+
+
+### 25.3.1 mv
+
+- 作用：为文件或目录**重命名**、或将文件或目录**移动**到其它位置（**第二个参数是已存在的目录执行移动**）
+- 语法：mv source dest
+- 举例：
+  mv hello.txt hi.txt   将hello.txt改名为hi.txt
+  mv hi.txt itheima/   将文件hi.txt移动到itheima目录中
+  mv hi.txt itheima/hello.txt   将hi.txt移动到itheima目录中，并改名为hello.txt
+  mv itcast/ itheima/   如果itheima目录不存在，将itcast目录改名为itheima
+  mv itcast/ itheima/   如果itheima目录存在，将itcast目录移动到itheima目录中
+
+
+
+## 25.4 打包压缩命令
+
+### 25.4.1 tar
+
+- 作用：对文件进行打包、解包、压缩、解压
+- 语法：tar \[-zcxvf] fileName \[files]
+- **说明**：
+  - 包文件后缀为**.tar**表示**只是完成了打包，并没有压缩**
+  - 包文件后缀为**.tar·gz**表示**打包的同时还进行了压缩**
+- 选项：
+   -z：z代表的是gzip，通过gzip命令处理文件，gzip可以对文件压缩或者解压
+   -c：c代表的是create，即创建新的包文件
+   -x：x代表的是extract，实现从包文件中还原文件
+   -v：v代表的是verbose，显示命令的执行过程
+   -f：f代表的是file，用于指定包文件的名称
+
+- 打包：
+  - tar -cvf hello.tar hello   将当前目录下所有文件打包，打包后的文件名为hello.tar
+  - **tar -zcvfhello.tar.gz hello**   将当前目录下所有文件打包并压缩，打包后的文件名为hello.tar.gz
+- 解包：
+  - tar -xvf hello.tar   将hello.tar文件进行解包，并将解包后的文件放在当前目录
+  - **tar -zxvf hello.tar.gz**   将hello.tar·gz文件进行解压，并将解压后的文件放在当前目录
+  - **tar -zxvf hello.tar.gz -C /usr/local**   将heLlo.tar.gz文件进行解压，解压到指定的/usr/local目录中
+
+
+
+## 25.5 文本编辑命令
+
+### 25.5.1 vi/vim
+
+- 作用：vi命令是Linux系统提供的一个文本编辑工具，可以对文件内容进行编辑，类似于Windows中的记事本
+- 语法：**vi fileName**
+- 说明：
+  1、vim是从vi发展来的一个功能更加强大的文本编辑工具，在编辑文件时可以对文本内容进行着色（更常用）。
+  2、要使用vim命令，需要我们自己完成安装。可以使用下面的命令来完成安装：**yum install vim**
+
+
+
+### 25.5.2 vim
+
+- 作用：对文件内容进行编辑，Vim其实就是一个文本编辑器
+- 语法：vim file Name
+
+![image-20250506213429553](javaweb.assets/image-20250506213429553.png)
+
+![image-20250506213020700](javaweb.assets/image-20250506213020700.png)
+
+![image-20250506213029915](javaweb.assets/image-20250506213029915.png)
+
+
+
+## 25.6 查找命令
+
+### 25.6.1 find
+
+- 作用：在指定目录下查找文件
+- 语法：**find** dirName **-option** fileName
+- 举例：
+   find . -name "\*.log"   在当前目录及其子目录下查找.log结尾文件
+   find /itcast -name "\*.log"   在/itcast目录及其子目录下查找.log结尾的文件
+
+
+
+### 25.6.2 grep
+
+- 作用：从指定文件中查找指定的文本内容
+- 语法：**grep \[-inAB]** word fileName
+- 选项：
+   -i：检索的关键字忽略（**i**gnore）大小写
+   -n：显示关键字所在的这一行的行号
+   -A：输出关键字所在行及之后（**A**fter）的几行记录（如：-A5表示输出关键字所在行之后的5行记录）
+   -B：输出关键字所在行及之前（**B**efore）的几行记录（如：-B5表示输出关键字所在行之前的5行记录）
+- 举例：
+   grep Hello HelloWorld.java   查找HelloWorld.java文件中出现的Hello字符串的位置
+   grep hello *.java   查找当前目录中所有.java结尾的文件中包含hello字符串的位置
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
