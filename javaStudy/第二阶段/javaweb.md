@@ -1930,7 +1930,7 @@ ApplicationContext applicationContext
 
 
 
-23.5 自定义starter
+### 23.5 自定义starter
 
 - 需求：自定义aliyun-oss-spring-boot-starter，完成阿里云oss操作工具类 AliyunOSSOperator 的自动配置。
 - 目标：引l入起步依赖引l入之后，要想使用阿里云osS，注入AliyunoSSOperator直接使用即可。
@@ -2020,7 +2020,7 @@ ApplicationContext applicationContext
 
 
 
-# 25、Linux
+# Linux
 
 - 目录结构和说明
 
@@ -2033,9 +2033,9 @@ ApplicationContext applicationContext
 
 
 
-## 25.1 目录操作命令
+## 1 目录操作命令
 
-### 25.1.1 ls
+### 1.1 ls
 
 - 作用：显示指定目录下的内容
 - 语法:ls \[-al] \[dir]
@@ -2046,7 +2046,7 @@ ApplicationContext applicationContext
 
 
 
-### 25.1.2 cd
+### 1.2 cd
 
 - 作用：用于切换当前工作目录，即进入指定目录
 - 语法：cd[dirName]
@@ -2062,7 +2062,7 @@ ApplicationContext applicationContext
 
 
 
-### 25.1.3 mkdir
+### 1.3 mkdir
 
 - 作用：创建目录
 - 语法：mkdir \[-p] dirName
@@ -2074,7 +2074,7 @@ ApplicationContext applicationContext
 
 
 
-### 25.1.4 rm
+### 1.4 rm
 
 - 作用：删除文件或者目录
 - 语法：rm \[-rf] name
@@ -2088,9 +2088,9 @@ ApplicationContext applicationContext
 
 
 
-## 25.2 文件操作命令
+## 2 文件操作命令
 
-### 25.2.1 cat
+### 2.1 cat
 
 - 作用：用于显示文件的所有内容；一次性全部输出，适合小文件，大文件用more指令
 - 语法：cat \[-n] fileName
@@ -2101,7 +2101,7 @@ ApplicationContext applicationContext
 
 
 
-### 25.2.2 more
+### 2.2 more
 
 - 作用：以分页的形式显示文件内容
 - 语法：morefileName
@@ -2115,7 +2115,7 @@ ApplicationContext applicationContext
 
 
 
-### 25.2.3 head
+### 2.3 head
 
 - 作用：查看文件开头的内容
 - 语法：headd[-n] fileName
@@ -2127,7 +2127,7 @@ ApplicationContext applicationContext
 
 
 
-### 25.2.4 tail
+### 2.4 tail
 
 - 作用：查看文件末尾的内容
 - 语法：tail[-nf]fileName
@@ -2141,9 +2141,9 @@ ApplicationContext applicationContext
 
 
 
-## 25.3 拷贝移动命令
+## 3 拷贝移动命令
 
-### 25.3.1 cp
+### 3.1 cp
 
 - 作用：用于复制文件或目录
 - 语法：cp \[-r] source dest
@@ -2157,7 +2157,7 @@ ApplicationContext applicationContext
 
 
 
-### 25.3.1 mv
+### 3.1 mv
 
 - 作用：为文件或目录**重命名**、或将文件或目录**移动**到其它位置（**第二个参数是已存在的目录执行移动**）
 - 语法：mv source dest
@@ -2170,9 +2170,9 @@ ApplicationContext applicationContext
 
 
 
-## 25.4 打包压缩命令
+## 4 打包压缩命令
 
-### 25.4.1 tar
+### 4.1 tar
 
 - 作用：对文件进行打包、解包、压缩、解压
 - 语法：tar \[-zcxvf] fileName \[files]
@@ -2196,9 +2196,9 @@ ApplicationContext applicationContext
 
 
 
-## 25.5 文本编辑命令
+## 5 文本编辑命令
 
-### 25.5.1 vi/vim
+### 5.1 vi/vim
 
 - 作用：vi命令是Linux系统提供的一个文本编辑工具，可以对文件内容进行编辑，类似于Windows中的记事本
 - 语法：**vi fileName**
@@ -2208,7 +2208,7 @@ ApplicationContext applicationContext
 
 
 
-### 25.5.2 vim
+### 5.2 vim
 
 - 作用：对文件内容进行编辑，Vim其实就是一个文本编辑器
 - 语法：vim file Name
@@ -2221,9 +2221,9 @@ ApplicationContext applicationContext
 
 
 
-## 25.6 查找命令
+## 6 查找命令
 
-### 25.6.1 find
+### 6.1 find
 
 - 作用：在指定目录下查找文件
 - 语法：**find** dirName **-option** fileName
@@ -2233,7 +2233,7 @@ ApplicationContext applicationContext
 
 
 
-### 25.6.2 grep
+### 6.2 grep
 
 - 作用：从指定文件中查找指定的文本内容
 - 语法：**grep \[-inAB]** word fileName
@@ -2248,13 +2248,273 @@ ApplicationContext applicationContext
 
 
 
+## 7 安装方式
+
+- **二进制发布包安装**：软件已经针对具体平台编译打包发布，只要解压，修改配置即可
+- **rpm安装**：软件已经按照redhat的包管理规范进行打包，使用rpm命令进行安装，**不能自行解决库依赖问题**
+- **yum安装**：一种在线软件安装方式，本质上还是rpm安装，自动下载安装包并安装，安装过程中**自动解决库依赖问题**
+- **源码编译安装**：软件以源码工程的形式发布，需要自己编译打包
 
 
 
+### 7.1 安装JDK
+
+操作步骤：
+
+1. 使用FinalShell自带的上传工具将jdk的二进制发布包上传到Linux `jdk-17.0.10_linux-x64_bin.tar.gz`
+
+2. 解压安装包，命令为`tar -zxvf jdk-17.0.10_linux-x64_bin.tar.gz -C /usr/local`
+
+3. 配置环境变量，使用vim命令修改/etc/profile文件，在文件末尾加入如下配置
+
+   ~~~bash
+   export JAVA_HOME=/usr/local/jdk-17.0.10
+   export PATH=$JAVA_HOME/bin:$PATH
+   ~~~
+
+4. 重新加载profile文件，使更改的配置立即生效，命令为 `source /etc/profile`
+
+5. 检查安装是否成功，命令为  java -version
 
 
 
+### 7.2 安装MySQL
 
+- 准备工作：卸载Linux系统中自带的mysqL/mariadb安装包，否则MySQL将安装失败
+
+  ~~~bash
+  rpm -qa | grep mariadb
+  rpm -e --nodeps mariadb-libs-5.5.60-1.el7_5.x86_64
+  ~~~
+
+- 下载并上传mysql安装包 mysql-8.0.30-linux-glibc2.12-x86_64.tar.xz
+
+- 解压安装包到当前目录，并将解压后的文件夹移动到/usr/Local目录下，改名为mysql
+
+  ~~~bash
+  tar -xvf mysql-8.0.30-linux-glibc2.12-x86_64.tar.xz
+  ~~~
+
+- 配置环境变量（编辑/etc/profile，追加内容）
+
+  ~~~bash
+  export MYSQL_HOME=/usr/local/mysql
+  export PATH=$MYSQL_HOME/bin:$PATH
+  ~~~
+
+- 注册MySQL为系统服务
+
+  ~~~bash
+  cp /usr/local/mysql/support-files/mysql.server/etc/init.d/mysql
+  chkconfig --add mysql
+  ~~~
+
+- 初始化数据库
+
+  ~~~bash
+  groupadd mysql
+  useradd -r -g mysql -s /bin/false mysql
+  mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
+  ~~~
+
+  ==初始化完毕后，日志中会输出mysql的root用户的临时密码，记得复制记录下来。==
+
+- 启动服务登录MySQL
+
+  ~~~bash
+  systemctl start mysql
+  mysql -uroot -pxxxxx
+  ~~~
+
+- 配置MySQL的root用户的密码，授权远程访问
+
+  ~~~bash
+  // 配置密码
+  ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY'1234';
+  
+  // 授权远程访问
+  CREATE USER 'root'@'%' IDENTIFIED BY '1234';
+  GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
+  FLUSH PRIVILEGES;
+  ~~~
+
+
+
+### 7.3 安装Nginx
+
+- 安装nginx运行时需要的依赖：`yum install -y pcre pcre-devel zlib zlib-devel openssl openssl-devel`
+- 上传nginx的源码包  nginx-1.20.2.tar.gz
+- 解压源码包到当前目录：`tar -zxvf nginx-1.20.2.tar.gz`
+- 进入到解压目录(cd nginx-1.20.2)后，执行指令：`./configure --prefix=/usr/local/nginx`
+- 执行编译nginx的指令：`make`
+- 执行安装nginx的指令，安装到上述指定的/usr/local/nginx目录：`make install`
+- 进入到nginx安装目录/usr/local/nginx，启动nginx服务：`sbin/nginx`
+
+
+
+## 8 防火墙操作
+
+- 看防火墙状态(**`systemctl status firewalld、firewall-cmd --state`**)
+- 关闭防火墙(**`systemctl stop firewalld`**)
+- 开启防火墙(**`systemctl start firewalld`**)
+- 永久关闭防火墙(**`systemctl disable firewalld`**)
+- 开放指定端口(**`firewall-cmd --zone=public --add-port=808o/tcp --permanent`**)
+- 关闭指定端口(**`firewall-cmd --zone=public --remove-port=8080/tcp --permanent`**)
+- 立即生效(**`firewall-cmd --reload`**)
+- 查看开放的端口(**`firewall-cmd --zone=public --list-ports`**)
+
+**注意**：
+
+1. Systemctl是管理Linux中服务的命令，可以对服务进行启动、停止、重启、查看状态等操作
+2. firewall-cmd是Linux中专门用于控制防火墙的命令
+3. 为了保证系统安全，生产服务器的防火墙不建议关闭
+
+
+
+## 9 项目部署
+
+### 9.1 前端项目部署
+
+![image-20250507203807423](javaweb.assets/image-20250507203807423.png)
+
+<img src="javaweb.assets/image-20250507204323158.png" alt="image-20250507204323158" style="zoom:50%;" />
+
+
+
+### 9.2 后端项目部署
+
+![image-20250507204420971](javaweb.assets/image-20250507204420971.png)
+
+
+
+![image-20250507205936409](javaweb.assets/image-20250507205936409.png)
+
+
+
+![image-20250507205942113](javaweb.assets/image-20250507205942113.png)
+
+
+
+![image-20250507210017685](javaweb.assets/image-20250507210017685.png)
+
+
+
+# Docker
+
+Linux中的安装、部署问题：
+
+- 安装包不知道在哪里下载，找不到，版本不知道用哪个
+- 命令太多，记不住
+- 步骤太多，易出错
+
+## 1 Docker安装
+
+### 1.1 卸载旧版
+
+首先如果系统中已经存在旧的Docker，则先卸载：
+
+```Shell
+yum remove docker \
+    docker-client \
+    docker-client-latest \
+    docker-common \
+    docker-latest \
+    docker-latest-logrotate \
+    docker-logrotate \
+    docker-engine \
+    docker-selinux 
+```
+
+### 1.2 配置Docker的yum库
+
+首先要安装一个yum工具
+
+```Bash
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+```
+
+安装成功后，执行命令，配置Docker的yum源（已更新为阿里云源）：
+
+```Bash
+sudo yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+
+sudo sed -i 's+download.docker.com+mirrors.aliyun.com/docker-ce+' /etc/yum.repos.d/docker-ce.repo
+```
+
+更新yum，建立缓存
+
+```Bash
+sudo yum makecache fast
+```
+
+### 1.3 安装Docker
+
+最后，执行命令，安装Docker
+
+```Bash
+yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+### 1.4 启动和校验
+
+```Bash
+# 启动Docker
+systemctl start docker
+
+# 停止Docker
+systemctl stop docker
+
+# 重启
+systemctl restart docker
+
+# 设置开机自启
+systemctl enable docker
+
+# 执行docker ps命令，如果不报错，说明安装启动成功
+docker ps
+```
+
+### 1.5 配置镜像加速
+
+镜像地址可能会变更，如果失效可以百度找最新的docker镜像。
+
+配置镜像步骤如下：
+
+```Bash
+# 创建目录
+rm -f /etc/docker/daemon.json
+
+# 复制内容  镜像
+tee /etc/docker/daemon.json <<-'EOF'
+{
+    "registry-mirrors": [
+        "http://hub-mirror.c.163.com",
+        "https://mirrors.tuna.tsinghua.edu.cn",
+        "http://mirrors.sohu.com",
+        "https://ustc-edu-cn.mirror.aliyuncs.com",
+        "https://ccr.ccs.tencentyun.com",
+        "https://docker.m.daocloud.io",
+        "https://docker.awsl9527.cn"
+    ]
+}
+EOF
+
+# 重新加载配置
+systemctl daemon-reload
+
+# 重启Docker
+systemctl restart docker
+```
+
+
+
+## 2 镜像和容器
+
+![image-20250507214329723](javaweb.assets/image-20250507214329723.png)
+
+
+
+![image-20250507214343807](javaweb.assets/image-20250507214343807.png)
 
 
 
