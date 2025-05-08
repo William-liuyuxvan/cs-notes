@@ -2338,7 +2338,13 @@ ApplicationContext applicationContext
   FLUSH PRIVILEGES;
   ~~~
 
+- Windows终端远程连接MySQL
 
+  ~~~bash
+  mysql -h192.168.100.128 -P3306 -uroot -p1234
+  ~~~
+
+  
 
 ### 7.3 安装Nginx
 
@@ -2518,9 +2524,101 @@ systemctl restart docker
 
 
 
+## 3 命令解读
+
+![image-20250508193658974](javaweb.assets/image-20250508193658974.png)
+
+![image-20250508193714289](javaweb.assets/image-20250508193714289.png)
 
 
 
+## 4 常见命令
+
+![image-20250508195320336](javaweb.assets/image-20250508195320336.png)
+
+
+
+## 5 数据卷
+
+**数据卷（volume）**是一个虚拟目录，是 ==容器内目录== 与 ==宿主机目录== 之间映射的桥梁。
+
+![image-20250508202159906](javaweb.assets/image-20250508202159906.png)
+
+docker容器中的文件无法直接编辑，可以通过数据卷进行间接修改，通过创建html和conf数据卷（虚拟的），然后在宿主机中的固定文件目录 /var/lib/docker/volumes 下会自动创建对应的 /html/\_data 和 /html/\_data 两个文件，在 /\_data 中的数据就是数据卷中的数据。在创建容器的时候指定挂载到该数据卷下，就可以实现修改宿主机中的 /\_data 数据进而控制容器中的数据。当容器中的数据修改时，宿主机对应数据也会修改，同理，当宿主机中该数据修改时，容器中的对应位置数据也会修改。
+
+
+
+==**注意**==：在执行 **`docker run`** 命令时，使用 **`-v 数据卷:容器内目录`** 形式可以完成数据卷挂载（**数据卷不存在，会自动创建**）
+
+
+
+### 5.1 操作指令
+
+![image-20250508203058664](javaweb.assets/image-20250508203058664.png)
+
+
+
+### 5.2 本地目录挂载
+
+命令：
+
+~~~bash
+docker run -d --name 容器名 -p 宿主机端口:容器端口 -v 宿主机目录或文件:容器内目录或文件 镜像名
+~~~
+
+**==注意==**：
+
+- 本地目录必须以 ／ 或 ./ 开头，如果直接以名称开头，会被识别为数据卷而非本地目录
+- `-v mysql:/var/Lib/mysql`  会被识别为一个数据卷，数据卷叫mysql
+- `-v ./mysql:/var/Lib/mysql`   会被识别为当前目录下的mysql目录
+
+
+
+![image-20250508210602261](javaweb.assets/image-20250508210602261.png)
+
+~~~bash
+docker run -d \
+--name mysql \
+-p 3307:3306 \
+-e MYSQL_ROOT_PASSWORD=123 \
+-e TZ=Asia/Shanghai \
+-v /root/mysql/data:/var/lib/mysql \
+-v /root/mysql/init:/docker-entrypoint-initdb.d \
+-v /root/mysql/conf:/etc/mysql/conf.d \
+mysql:8
+~~~
+
+
+
+## 6 自定义镜像
+
+镜像就是包含了应用程序、程序运行的系统函数库、运行配置等文件的文件包。构建镜像的过程就是把上述打包的过程。
+
+### 6.1 镜像结构
+
+![image-20250508211327746](javaweb.assets/image-20250508211327746.png)
+
+
+
+### 6.2 Dockerfile
+
+Dockerfile就是一个文本文件，其中包含一个个的指令（Instruction），用指令来说明要执行什么操作来构建镜像。将来Docker可以根据Dockerfile帮我们构建镜像。
+
+![image-20250508211627093](javaweb.assets/image-20250508211627093.png)
+
+例如：
+
+![image-20250508211822508](javaweb.assets/image-20250508211822508.png)
+
+ ![image-20250508212036966](javaweb.assets/image-20250508212036966.png)
+
+
+
+## 7 网络
+
+加入自定义网络的容器才可以通过容器名互相访问，Docker的网络操作命令如下：
+
+![image-20250508213405653](javaweb.assets/image-20250508213405653.png)
 
 
 
