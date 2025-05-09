@@ -2622,6 +2622,145 @@ Dockerfile就是一个文本文件，其中包含一个个的指令（Instructio
 
 
 
+## 8 项目部署
+
+### 8.1 部署服务器
+
+- 需求：将我们开发的tlias-web-management项目打包为镜像，并部署。
+
+- 步骤：
+
+  1. 准备MySQL容器，并创建tlias数据库及表结构。（前面对于docker mysql的部署）
+
+  2. 准备java应用（tlias项目）镜像，部署Docker容器，运行测试。
+
+     - 修改tlias项目的配置文件，修改数据库服务地址及logback日志文件存放地址，打jar包。
+
+     - 编写Dockerfile文件。（一定要修改成自己的相应信息）
+
+       ~~~dockerfile
+       # 使用 CentOS 7 作为基础镜像
+       FROM centos:7
+       
+       # 添加 JDK 到镜像中
+       COPY jdk17.tar.gz /usr/local/
+       RUN tar -xzf /usr/local/jdk17.tar.gz -C /usr/local/ &&  rm /usr/local/jdk17.tar.gz
+       
+       # 设置环境变量
+       ENV JAVA_HOME=/usr/local/jdk-17.0.10
+       ENV PATH=$JAVA_HOME/bin:$PATH
+       
+       ENV OSS_ACCESS_KEY_ID=YOUR-KEY-ID
+       ENV OSS_ACCESS_KEY_SECRET=YOUR-KEY-SECRET
+       
+       #统一编码
+       ENV LANG=en_US.UTF-8
+       ENV LANGUAGE=en_US:en
+       ENV LC_ALL=en_US.UTF-8
+       
+       # 创建应用目录
+       RUN mkdir -p /tlias
+       WORKDIR /tlias
+       
+       # 复制应用 JAR 文件到容器
+       COPY  tlias-own.jar  tlias.jar
+       
+       # 暴露端口
+       EXPOSE 8080
+       
+       # 运行命令
+       ENTRYPOINT ["java","-jar","/tlias/tlias.jar"]
+       ~~~
+
+     - 构建Docker镜像。
+
+       ~~~dockerfile
+       docker build -t tlias:1.0 .
+       ~~~
+
+     - 部署Docker容器。
+
+       ~~~dockerfile
+       docker run -d --name tlias-server --network eeekuu -p 8080:8080  tlias:1.0
+       ~~~
+
+
+
+查看容器运行日志，实时更新
+
+```bash
+docker logs -f 容器名
+```
+
+
+
+### 8.2 部署前端
+
+- 需求：创建一个新的nginx容器，将资料中提供的前端项目的静态资源部署到nginx中。
+- 步骤：
+  1. 部署nginx容器（设置目录映射）。
+     -v /root/tlias-nginx/html:/usr/share/nginx/html
+     -v /root/tlias-nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+  2. 将部署的前端资源文件及配置文件上传至服务器，执行命令创建nginx容器。
+
+~~~bash
+docker run -d \
+ --name nginx-tlias \
+ -v /root/tlias-nginx/html:/usr/share/nginx/html \
+ -v /root/tlias-nginx/conf/nginx.conf:/etc/nginx/nginx.conf \
+ --network eeekuu \
+ -p 80:80 \
+nginx:1.20.2
+~~~
+
+
+
+## 9 DockerCompose
+
+**Docker Compose** 通过一个单独的 **docker-compose.yml** 模板文件（YAML 格式）来定义一组相关联的应用容器，帮助我们实现**多个项目关联的Docker容器的快速部署**
+
+![image-20250509084843355](javaweb.assets/image-20250509084843355.png)
+
+![image-20250509085040080](javaweb.assets/image-20250509085040080.png)
+
+
+
+### 9.1 基于DockerCompose快速部署tlias系统
+
+- 涉及到的服务：MySQL数据库、服务端、前端nginx。
+- 步骤：
+  1. 准备资源（tlias.sql，服务端的jdk17、jar包、Dockerfile，前端项目打包文件、nginx.conf）
+  2. 准备docker-compose.yml配置文件
+  3. 基于DockerCompose快速构建项目
+
+
+
+### 9.2 DockerCompose命令
+
+- DockerCompose的命令格式：**docker compose \[OPTIONS] \[COMMAND]**
+
+- 选项参数说明：
+
+  ![image-20250509090847114](javaweb.assets/image-20250509090847114.png)
+
+
+
+执行命令启动所有service容器：`docker compose up -d` ，-d 表示在后台运行。
+
+执行命令停止并删除所有service容器：`docker compose down`
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
