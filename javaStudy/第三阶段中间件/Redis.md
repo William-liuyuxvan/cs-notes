@@ -129,9 +129,34 @@ NoSQL = Not Only SQL （不仅仅是SQL）泛指非关系型数据库
 
 
 
+# Redis入门
+
+## 1、概述
+
+Redis（**R**emote **D**ictionary **S**erver），远程字典服务
+
+是一个**开源**的使用ANSI [C语言](https://baike.baidu.com/item/C语言/105958?fromModule=lemma_inlink)编写、支持**网络**、可**基于内存亦可持久化**的**日志型**、**Key-Value**[数据库](https://baike.baidu.com/item/数据库/103728?fromModule=lemma_inlink)，并提供多种语言的**API**。
 
 
 
+**作用**：
+
+1. 内存存储、持久化，内存中是断电即失，持久化很重要（RDB、AOF）
+2. 效率高，可用于高速缓存
+3. 发布订阅系统（消息队列）
+4. 地图信息分析
+5. 计时器、计数器（浏览量）
+6. ...
+
+
+
+**特性**：
+
+1. 多样的数据类型
+2. 持久化
+3. 事务
+4. 集群
+5. ...
 
 
 
