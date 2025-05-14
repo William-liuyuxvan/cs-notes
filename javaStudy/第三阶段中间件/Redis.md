@@ -240,17 +240,359 @@ Redis的key允许有多个单词形成层级结构，多个单词之间用：隔
 
 
 
+### 2.5 Hash类型
+
+Hash类型，也叫散列，其value是一个无序字典，类似于Java中的HashMap结构。
+
+String结构是将对象序列化为JSON字符串后存储，当需要修改对象某个字段时很不方便：
+
+![image-20250514171726052](Redis.assets/image-20250514171726052.png)
+
+Hash结构可以将对象中的每个字段独立存储，可以针对单个字段做CRUD：
+
+![image-20250514171739432](Redis.assets/image-20250514171739432.png)
+
+**Hash的常见命令**：
+
+- HSET key field value：添加或者修改hash类型key的field的值
+- HGET key field：获取一个hash类型key的field的值
+- HMSET：批量添加多个hash类型key的field的值
+- HMGET：批量获取多个hash类型key的field的值
+- HGETALL：获取一个hash类型的key中的所有的field和value
+- HKEYS：获取一个hash类型的key中的所有的field
+- HVALS：获取一个hash类型的key中的所有的value
+- HINCRBY:让一个hash类型key的字段值自增并指定步长
+- HSETNX：添加一个hash类型的key的field值，前提是这个field不存在，否则不执行
+
+**与String区别**：
+
+- Hash是操作的字段 feild，而String操作的是键 key。
 
 
 
+### 2.6 List类型
+
+Redis中的List类型与Java中的**LinkedList**类似，可以看做是一个双向链表结构。既可以支持正向检索和也可以支持反向检索。
+
+特征也与LinkedList类似：
+
+- **有序**
+- **元素可以重复**
+- 插入和删除**快**
+- 查询速度**一般**
+
+常用来存储一个有序数据，例如：朋友圈点赞列表，评论列表等。
+
+**List的常见命令**有：
+
+- LPUSH key element ...：向列表左侧插入一个或多个元素
+- LPOP key：移除并返回列表左侧的第一个元素，没有则返回nil
+- RPUSH key element ...：向列表右侧插入一个或多个元素
+- RPOP key：移除并返回列表右侧的第一个元素
+- LRANGE key star end：返回一段角标范围内的所有元素，角标从0开始
+- BLPOP和BRPOP：与LPOP和RPOP类似，只不过在没有元素时等待指定时间，而不是直接返回nil
+
+![image-20250514173321374](Redis.assets/image-20250514173321374.png)
+
+**用法**：
+
+- 利用List结构**模拟一个栈**
+  - 入口和出口在**同一边**
+- 利用List结构**模拟一个队列**
+  - 入口和出口在**不同边**
+- 利用List结构**模拟一个阻塞队列**
+  - 入口和出口在**不同边**
+  - 出队时**采用BLPOP或BRPOP**
 
 
 
+### 2.7 Set类型
+
+Redis的Set结构与Java中的HashSet类似，可以看做是一个value为null的HashMap。因为也是一个hash表，因此具备
+
+与HashSet类似的**特征**：
+
+- 无序
+- 元素不可重复
+- 查找快
+- 支持交集、并集、差集等功能
+
+**Set的常见命令**：
+
+- SADD key member ...：向set中添加一个或多个元素
+- SREM key member ...：移除set中的指定元素
+- SCARD key：返回set中元素的个数
+- SISMEMBER key member：判断一个元素是否存在于set中
+- SMEMBERS：获取set中的所有元素
+- **SINTER** key1 key2 ...：求key1与key2的**交集**
+- **SDIFF** key1 key2 ...：求key1与key2的**差集**
+- **SUNlON** key1 key2 ..：求key1和key2的**并集**
+
+![image-20250514185425735](Redis.assets/image-20250514185425735.png)
 
 
 
+### 2.8 SortedSet类型
+
+添加元素少的时候使用压缩表ziplist，当数据多了就转成跳表skiplist
+
+Redis的SortedSet是一个可排序的set集合，与Java中的TreeSet有些类似，但底层数据结构却差别很大。SortedSet中的每一个元素都带有一个score属性，可以基于score属性对元素排序，底层的实现是一个跳表（SkipList）加hash表。
+
+SortedSet具备下列**特性**：
+
+- 可排序
+- 元素不重复
+- 查询速度快
+
+因为SortedSet的**可排序特性**，经常被用来**实现排行榜**这样的功能。
+
+**SortedSet的常见命令**：
+
+- ZADD key score member：添加一个或多个元素到sortedset，如果已经存在则更新其score值
+- ZREM key member：删除sortedset中的一个指定元素
+- ZSCORE key member：获取sortedset中的指定元素的score值
+- ZRANK key member：获取sortedset中的指定元素的排名
+- ZCARD key：获取sortedset中的元素个数
+- ZCOUNT key min max：统计score值在给定范围内的所有元素的个数
+- ZINCRBY key increment member：让sortedset中的指定元素自增，步长为指定的increment值
+- ZRANGE key min max：按照score排序后，获取指定排名范围内的元素
+- ZRANGEBYSCORE key min max：按照score排序后，获取指定score范围内的元素
+- ZDIFF、ZINTER、ZUNION：求差集、交集、并集
+
+==**注意**==：所有的排名**默认都是升序**，如果要**降序则在命令的Z后面添加==REV==**即可。
 
 
+
+## 3、java客户端
+
+### 3.1 Jedis
+
+#### 3.1.1 Jedis连接
+
+**步骤**：
+
+1. 引入依赖
+
+   ~~~xml
+   <!-- jedis -->
+   <dependency>
+       <groupId>redis.clients</groupId>
+       <artifactId>jedis</artifactId>
+       <version>3.7.0</version>
+   </dependency>
+   
+   <!-- 单元测试 -->
+   <dependency>
+       <groupId>org.junit.jupiter</groupId>
+       <artifactId>junit-jupiter</artifactId>
+       <version>5.7.0</version>
+       <scope>test</scope>
+   </dependency>
+   ~~~
+
+   
+
+2. 建立连接 -- 测试指令 -- 断开连接
+
+   ~~~java
+   private Jedis jedis;
+   
+   @BeforeEach
+   public void setUp() {
+       jedis = new Jedis("192.168.100.128", 6379);
+       jedis.auth("123321");
+       jedis.select(0);
+   }
+   
+   @Test
+   public void testString() {
+       String result = jedis.set("name", "yuxuan");
+       System.out.println("result : " + result);
+       String name = jedis.get("name");
+       System.out.println("name : " + name);
+   }
+   
+   @Test
+   public void testHash() {
+       jedis.hset("user", "name", "yuxuan");
+       jedis.hset("user", "age", "18");
+       jedis.hset("user", "gender", "male");
+   
+       jedis.hgetAll("user")
+               .forEach((k, v) -> System.out.println(k + " : " + v));
+   }
+   
+   @AfterEach
+   public void tearDown() {
+       if (jedis != null) {
+           jedis.close();
+       }
+   }
+   ~~~
+
+   
+
+#### 3.1.2 Jedis连接池
+
+**Jedis本身是线程不安全的**，并且频繁的创建和销毁连接会有性能损耗，因此我们推荐大家使用==Jedis连接池==代替Jedis的直连方式。
+
+```java
+public class JedisConnectionFactory {
+    private static JedisPool jedisPool;
+
+    static {
+        // 配置连接池
+        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+        jedisPoolConfig.setMaxTotal(8);
+        jedisPoolConfig.setMaxIdle(8);
+        jedisPoolConfig.setMinIdle(8);
+        jedisPoolConfig.setMaxWaitMillis(1000);
+        // 连接池连接
+        jedisPool = new JedisPool(jedisPoolConfig,
+                "192.168.100.128", 6379, 1000, "123321");
+    }
+
+    public static Jedis getJedis() {
+        return jedisPool.getResource();
+    }
+}
+```
+
+
+
+### 3.2 SpringDataRedis
+
+SpringData是Spring中数据操作的模块，包含对各种数据库的集成，其中对Redis的集成模块就叫做SpringDataRedis，官网地址：https://spring.io/projects/spring-data-redis
+
+- 提供了对不同Redis客户端的整合（Lettuce和Jedis）
+- 提供了RedisTemplate统一APl来操作Redis
+- 支持Redis的发布订阅模型
+- 支持Redis哨兵和Redis集群
+- 支持基于Lettuce的响应式编程
+- 支持基于JDK、JSON、字符串、Spring对象的数据序列化及反序列化
+- 支持基于Redis的JDKCollection实现
+
+![image-20250514203008246](Redis.assets/image-20250514203008246.png)
+
+
+
+SpringDataRedis中提供了RedisTemplate工具类，其中**封装了各种对Redis的操作**。并且**将不同数据类型的操作API封装到了不同的类型中**：
+
+![image-20250514203219344](Redis.assets/image-20250514203219344.png)
+
+
+
+#### 3.2.1 RedisTemplate 入门
+
+SpringBoot已经提供了对SpringDataRedis的支持，使用非常简单：
+
+1. 引入依赖
+
+   ~~~xml
+   <!--Redis依赖-->
+   <dependency>
+   	<groupId>org.springframework.boot</groupId>
+   	<artifactId>spring-boot-starter-data-redis</artifactId>
+   </dependency>
+   
+   <!--连接池依赖-->
+   <dependency>
+   	<groupId>org.apache.commons</groupId>
+   	<artifactId>commons-pool2</artifactId>
+   </dependency>
+   ~~~
+
+2. 配置文件
+
+   ~~~yml
+   spring:
+     redis:
+       host: 192.168.150.101
+       port: 6379
+       password: 123321
+       lettuce:
+         pool:
+           max-active: 8 #最大连接
+           max-idle: 8 #最大空闲连接
+           min-idle: 0 #最小空闲连接
+           max-wait: 100 #连接等待时间
+   ~~~
+
+3. 注入RedisTemplate
+
+   ~~~java
+   @Autowired
+   private RedisTemplate redisTemplate;
+   ~~~
+
+4. 编写测试
+
+   ~~~java
+   @SpringBootTest
+   public class RedisTest {
+   	@Autowired
+   	private RedisTemplate redisTemplate;
+   	@Test
+   	void testString() {
+   		// 插入一条string类型数据
+   		redisTemplate.opsForValue().set("name", "李四");
+   		// 读取一条string类型数据
+   		Object name = redisTemplate.opsForValue().get("name");
+   		System.out.println("name = " + name);
+       }
+   }
+   ~~~
+
+
+
+#### 3.2.2 SpringDataRedis序列化方式
+
+RedisTemplate可以接收任意Object作为值写入Redis，只不过写入前会把Object序列化为字节形式，默认是采用JDK序列化，得到的结果是这样的:
+
+![image-20250514212746835](Redis.assets/image-20250514212746835.png)
+
+这是因为我们没有自定义序列化方式，所以采用JDK的序列化方式，对象流的方式进行存储为字节序列。
+
+![image-20250514213300795](Redis.assets/image-20250514213300795.png)
+
+==**缺点**==：
+
+- 可读性差
+- 内存占用较大
+
+
+
+**我们可以自定义RedisTemplate的序列化方式，代码如下:**
+
+```java
+@Configuration
+public class RedisConfig {
+
+    @Bean
+    // RedisConnectionFactory是由commons-pool2的依赖注入
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+        // 1. 创建RedisTemplate对象
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+
+        // 2. 设置连接工程
+        redisTemplate.setConnectionFactory(connectionFactory);
+
+        // 3. 创建JSON序列化工具
+        GenericJackson2JsonRedisSerializer jsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+
+        // 4. 设置Key的序列化
+        redisTemplate.setKeySerializer(RedisSerializer.string());
+        redisTemplate.setHashKeySerializer(RedisSerializer.string());
+
+        // 5. 设置Value的序列化
+        redisTemplate.setValueSerializer(jsonRedisSerializer);
+        redisTemplate.setHashValueSerializer(jsonRedisSerializer);
+
+        // 6. 返回
+        return redisTemplate;
+    }
+}
+```
 
 
 
