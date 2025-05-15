@@ -545,7 +545,7 @@ SpringBoot已经提供了对SpringDataRedis的支持，使用非常简单：
 
 
 
-#### 3.2.2 SpringDataRedis序列化方式
+#### 3.2.2 SpringDataRedis序列化方式 -- 重写RedisTemplate
 
 RedisTemplate可以接收任意Object作为值写入Redis，只不过写入前会把Object序列化为字节形式，默认是采用JDK序列化，得到的结果是这样的:
 
@@ -593,6 +593,106 @@ public class RedisConfig {
     }
 }
 ```
+
+
+
+#### 3.2.3 SpringDataRedis序列化方式 -- 利用StringRedisTemplate手动实现序列化
+
+尽管JSON的序列化方式可以满足我们的需求，但依然存在一些问题，如图:
+
+![image-20250515145245409](Redis.assets/image-20250515145245409.png)
+
+为了在反序列化时知道对象的类型，JSON序列化器会将类的class类型写入json结果中，存入Redis，，占用了大量空间，会带来额外的内存开销。
+
+为了节省内存空间，通常不会使用JSON序列化器来处理value，而是统一使用String序列化器，要求只存储String类型的key和value。当需要存储java对象时，手动完成对象的序列化和反序列化。
+
+![image-20250515145658751](Redis.assets/image-20250515145658751.png)
+
+Spring默认提供了一个StringRedisTemplate类，它的key和value的序列化方式**默认就是String方式**。**省去了我们自定义RedisTemplate**的过程:
+
+```java
+@Autowired
+private StringRedisTemplate stringRedisTemplate;
+// JSON工具
+private static final ObjectMapper mapper = new ObjectMapper();
+
+@Test
+void testSaveUser() throws JsonProcessingException {
+    // 1. 准备对象
+    User user = new User("虎哥", 21);
+
+    // 2. 手动序列化
+    String json = mapper.writeValueAsString(user);
+
+    // 3. 写入数据
+    stringRedisTemplate.opsForValue().set("user:200", json);
+
+    // 4. 读取数据
+    String s = stringRedisTemplate.opsForValue().get("user:200");
+
+    // 5. 手动反序列化
+    User user1 = mapper.readValue(s, User.class);
+
+    // 6. 输出
+    System.out.println("user1 = " + user1);
+}
+```
+
+![image-20250515150812441](Redis.assets/image-20250515150812441.png)
+
+
+
+**RedisTemplate的两种序列化实践方案：**
+
+- **方案一**：
+  1. 自定义RedisTemplate
+  2. 修改RedisTemplate的序列化器为GenericJackson2JsonRedisSerializer
+- **方案二**：
+  1. 使用StringRedisTemplate
+  2. 写入Redis时，手动把对象序列化为JSON
+  3. 读取Redis时，手动把读取到的JSON反序列化为对象
+
+
+
+# Redis实战
+
+## 1、短信登陆
+
+**基于session实现登录**
+
+![image-20250515154120903](Redis.assets/image-20250515154120903.png)
+
+
+
+通过session进行存储的数据只能在同一个服务器中访问，但是如果有多个服务器形成的集群时，会出现session不共享问题，不知道是哪个用户的操作指令。因此用redis代替session进行存储数据是很有必要的，redis拥有着：1. 内存存储，读写速度快；2. key-value存储方式；3. 数据可共享。是代替session的不二之选。
+
+
+
+**基于redis共享session登录**
+
+![](Redis.assets/image-20250515181054895.png)
+
+
+
+![image-20250515181201351](Redis.assets/image-20250515181201351.png)
+
+利用hash结构存储比Stiring结构更加直观，内存占用更少，并且在单个字段上的CRUD更加灵活。
+
+
+
+**拦截器的优化**：
+
+![image-20250515193135694](Redis.assets/image-20250515193135694.png)
+
+
+
+
+
+
+
+
+
+
 
 
 
