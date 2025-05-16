@@ -658,7 +658,7 @@ void testSaveUser() throws JsonProcessingException {
 
 ## 1、短信登陆
 
-**基于session实现登录**
+### 1.1 **基于session实现登录**
 
 ![image-20250515154120903](Redis.assets/image-20250515154120903.png)
 
@@ -668,7 +668,7 @@ void testSaveUser() throws JsonProcessingException {
 
 
 
-**基于redis共享session登录**
+### 1.2 **基于redis共享session登录**
 
 ![](Redis.assets/image-20250515181054895.png)
 
@@ -683,6 +683,28 @@ void testSaveUser() throws JsonProcessingException {
 **拦截器的优化**：
 
 ![image-20250515193135694](Redis.assets/image-20250515193135694.png)
+
+
+
+## 2、商品查询缓存
+
+### 2.1 缓存
+
+**缓存**是数据交换的缓冲区（称作Cache），是存储数据的临时地方，一般读写性能较高。
+
+![image-20250516130852967](Redis.assets/image-20250516130852967.png)
+
+![image-20250516130910410](Redis.assets/image-20250516130910410.png)
+
+
+
+### 2.2 添加Redis缓存
+
+![image-20250516172007294](Redis.assets/image-20250516172007294.png)
+
+
+
+
 
 
 
