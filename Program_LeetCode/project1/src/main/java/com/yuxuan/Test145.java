@@ -26,26 +26,55 @@ public class Test145 {
     // }
 
     // 栈  左 - 右 - 中
+    // public List<Integer> postorderTraversal(TreeNode root) {
+    //     List<Integer> res = new ArrayList<>();
+
+    //     if (root == null) return res;
+
+    //     Stack<TreeNode> stack = new Stack<>();
+    //     stack.push(root);
+    //     while (!stack.empty()) {
+    //         TreeNode cur = stack.pop();
+    //         res.add(cur.val);
+    //         if (cur.left != null) {
+    //             stack.push(cur.left);
+    //         }
+    //         if (cur.right != null) {
+    //             stack.push(cur.right);
+    //         }
+    //     }
+    //     Collections.reverse(res);
+
+    //     return res;
+    // }
+
+    // 迭代法  左 - 右 - 中
     public List<Integer> postorderTraversal(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-
-        if (root == null) return res;
-
         Stack<TreeNode> stack = new Stack<>();
-        stack.push(root);
+
+        if (root != null) stack.push(root);
         while (!stack.empty()) {
             TreeNode cur = stack.pop();
-            res.add(cur.val);
-            if (cur.left != null) {
-                stack.push(cur.left);
-            }
-            if (cur.right != null) {
-                stack.push(cur.right);
+            if (cur != null) {
+                stack.push(cur);
+                stack.push(null);
+                if (cur.right != null) stack.push(cur.right);
+                if (cur.left != null) stack.push(cur.left);
+            } else {
+                cur = stack.pop();
+                res.add(cur.val);
             }
         }
-        Collections.reverse(res);
 
         return res;
+    }
+
+    public static void main(String[] args) {
+        TreeNode root = new TreeNode(1);
+        root.right = new TreeNode(2);
+        root.right.left = new TreeNode(3);
+        new Test145().postorderTraversal(root);
     }
 }
 
