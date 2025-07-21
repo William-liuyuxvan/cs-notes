@@ -2,6 +2,7 @@ package com.yuxuan.myRPCVersion2.server;
 
 
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +22,17 @@ public class ServiceProvider {
     }
 
     public void provideServiceInterface(Object service){
+        String name = service.getClass().getName();
         Class<?>[] interfaces = service.getClass().getInterfaces();
+
+//        System.out.println("name: " + name);
+//        Arrays.stream(interfaces).forEach(System.out::println);
+        /*
+        name: com.yuxuan.myRPCVersion2.server.UserServiceImpl
+        interface com.yuxuan.myRPCVersion2.service.UserService
+        name: com.yuxuan.myRPCVersion2.server.BlogServiceImpl
+        interface com.yuxuan.myRPCVersion2.service.BlogService
+         */
 
         for(Class clazz : interfaces){
             interfaceProvider.put(clazz.getName(),service);
