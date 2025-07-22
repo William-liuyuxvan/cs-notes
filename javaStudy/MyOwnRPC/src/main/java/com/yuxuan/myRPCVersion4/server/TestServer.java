@@ -1,9 +1,9 @@
-package com.yuxuan.myRPCVersion3.server;
+package com.yuxuan.myRPCVersion4.server;
 
-import com.yuxuan.myRPCVersion3.service.BlogServiceImpl;
-import com.yuxuan.myRPCVersion3.service.BlogService;
-import com.yuxuan.myRPCVersion3.service.UserService;
-import com.yuxuan.myRPCVersion3.service.UserServiceImpl;
+import com.yuxuan.myRPCVersion4.service.BlogService;
+import com.yuxuan.myRPCVersion4.service.BlogServiceImpl;
+import com.yuxuan.myRPCVersion4.service.UserService;
+import com.yuxuan.myRPCVersion4.service.UserServiceImpl;
 
 /**
  * @ClassName TestSrver
@@ -26,6 +26,6 @@ public class TestServer {
         serviceProvider.provideServiceInterface(blogServer);
 
         RPCServer RPCServer = new NettyRPCServer(serviceProvider);
-        RPCServer.start(8800);
+        RPCServer.start(8899);
     }
 }

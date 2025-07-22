@@ -1,7 +1,7 @@
-package com.yuxuan.myRPCVersion3.server;
+package com.yuxuan.myRPCVersion4.server;
 
-import com.yuxuan.myRPCVersion3.common.RPCRequest;
-import com.yuxuan.myRPCVersion3.common.RPCResponse;
+import com.yuxuan.myRPCVersion4.common.RPCRequest;
+import com.yuxuan.myRPCVersion4.common.RPCResponse;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
  * @Date 2025/6/27 4:40
  */
 @AllArgsConstructor
-public class NettyRPCServerHandler extends SimpleChannelInboundHandler<RPCRequest > {
+public class NettyRPCServerHandler extends SimpleChannelInboundHandler<RPCRequest> {
     private ServiceProvider serviceProvider;
 
     @Override
@@ -26,11 +26,6 @@ public class NettyRPCServerHandler extends SimpleChannelInboundHandler<RPCReques
         RPCResponse response = getResponse(msg);
         ctx.writeAndFlush(response);
         ctx.close();
-    }
-
-    @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("链接了： " + ctx);
     }
 
     @Override

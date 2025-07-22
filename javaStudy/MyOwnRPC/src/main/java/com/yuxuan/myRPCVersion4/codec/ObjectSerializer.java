@@ -1,0 +1,52 @@
+package com.yuxuan.myRPCVersion4.codec;
+
+import java.io.*;
+
+/**
+ * @ClassName ObjectSerializer
+ * @Description TODO
+ * @Author eeekuu
+ * @Date 2025/7/22 16:30
+ */
+public class ObjectSerializer implements Serializer{
+
+    // 利用 java IO 对象 -> 字节数组
+    @Override
+    public byte[] serialize(Object obj) {
+        byte[] bytes = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(obj);
+            oos.flush();
+            bytes = bos.toByteArray();
+            oos.close();
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return bytes;
+    }
+
+    @Override
+    public Object deserialize(byte[] bytes, int messageType) {
+        Object obj = null;
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        try {
+            ObjectInputStream ois = new ObjectInputStream(bis);
+            obj = ois.readObject();
+            ois.close();
+            bis.close();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return obj;
+    }
+
+    @Override
+    public int getType() {
+        return 0;
+    }
+}

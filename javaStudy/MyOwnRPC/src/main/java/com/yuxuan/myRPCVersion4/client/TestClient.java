@@ -1,9 +1,9 @@
-package com.yuxuan.myRPCVersion3.client;
+package com.yuxuan.myRPCVersion4.client;
 
-import com.yuxuan.myRPCVersion3.common.Blog;
-import com.yuxuan.myRPCVersion3.common.User;
-import com.yuxuan.myRPCVersion3.service.BlogService;
-import com.yuxuan.myRPCVersion3.service.UserService;
+import com.yuxuan.myRPCVersion4.common.Blog;
+import com.yuxuan.myRPCVersion4.common.User;
+import com.yuxuan.myRPCVersion4.service.BlogService;
+import com.yuxuan.myRPCVersion4.service.UserService;
 
 /**
  * @ClassName TestClient

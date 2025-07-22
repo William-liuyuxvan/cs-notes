@@ -1,7 +1,7 @@
-package com.yuxuan.myRPCVersion3.client;
+package com.yuxuan.myRPCVersion4.client;
 
-import com.yuxuan.myRPCVersion3.common.RPCRequest;
-import com.yuxuan.myRPCVersion3.common.RPCResponse;
+import com.yuxuan.myRPCVersion4.common.RPCRequest;
+import com.yuxuan.myRPCVersion4.common.RPCResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
